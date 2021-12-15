@@ -21,6 +21,6 @@ class MarketIndicator extends Model
      */
     public function metadata()
     {
-        return $this->hasMany(MarketIndicatorMetadata::class, 'id', 'market_indicator_id');
+        return $this->hasMany(MarketIndicatorMetadata::class, 'market_indicator_id');
     }
 }

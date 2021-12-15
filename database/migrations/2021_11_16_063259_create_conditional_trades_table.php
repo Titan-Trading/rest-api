@@ -22,6 +22,7 @@ class CreateConditionalTradesTable extends Migration
             $table->foreignId('connected_exchange_id'); // exchange and api key to use for the trade
             $table->foreignId('parent_conditional_trade_id')->nullable(); // only apply trade once parent trade has completed
             $table->boolean('is_test')->default(false); // is test order or not
+            $table->boolean('is_active')->default(false); // is active or not
             $table->string('status'); // status of the trade
             $table->string('side')->default('buy'); // side of the trade
             $table->string('base_symbol'); // base symbol USD, BTC, ETH, etc.

@@ -22,7 +22,7 @@ class ImageSeeder extends Seeder
         ];
 
         foreach($imagesData as $imageData) {
-            $image = Image::whereEmail($imageData['name'])->first();
+            $image = Image::whereName($imageData['name'])->first();
             if(!$image) {
                 $image = new Image();
                 $image->name = $imageData['name'];

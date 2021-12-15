@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\MarketIndicator;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,9 +17,10 @@ class DatabaseSeeder extends Seeder
             ImageSeeder::class,
             UserSeeder::class,
             ExchangeSeeder::class,
+            CurrencyPairSeeder::class,
             ConnectedExchangeSeeder::class,
             MarketIndicatorSeeder::class,
-            NewsSourceSeeder::class,
+            // NewsSourceSeeder::class,
         ]);
     }
 }
