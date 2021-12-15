@@ -13,6 +13,9 @@ class CreateConnectedExchangesTable extends Migration
      */
     public function up()
     {
+        /**
+         * Exchange accounts (connections for a given user to a given exchange)
+         */
         Schema::create('connected_exchanges', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');

@@ -16,6 +16,7 @@ class ConditionalTrade extends Model
         'connected_exchange_id',
         'parent_conditional_trade_id',
         'is_test',
+        'is_active',
         'status',
         'side',
         'base_symbol',
