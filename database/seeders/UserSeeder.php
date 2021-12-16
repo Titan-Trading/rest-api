@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -21,16 +22,16 @@ class UserSeeder extends Seeder
             [
                 'name'               => 'Administrator',
                 'email'              => 'admin@simpletrader.com',
-                'password'           => Hash::make('test123'),
-                'profile_image_name' => ''
+                'password'           => 'test123',
+                'profile_image_name' => 'test'
             ]
         ];
 
         foreach($usersData as $userData) {
-            $profileImage = Image::whereName($userData['profile_image_name'])->first();
-            if($profileImage) {
-                continue;
-            }
+            // $profileImage = Image::whereName($userData['profile_image_name'])->first();
+            // if($profileImage) {
+            //     continue;
+            // }
             
             $user = User::whereEmail($userData['email'])->first();
             if(!$user) {
@@ -38,11 +39,11 @@ class UserSeeder extends Seeder
                 $user->email = $userData['email'];
             }
 
-            $user->profile_image_id  = $profileImage->id;
+            $user->profile_image_id  = null; //$profileImage->id;
             $user->name              = $userData['name'];
-            $user->password          = $userData['password'];
+            $user->password          = Hash::make($userData['password']);
             $user->email_verified_at = Carbon::now();
-            $user->remember_token    = '';
+            $user->remember_token    = Str::random(24);
             $user->save();
         }
     }
