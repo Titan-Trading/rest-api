@@ -9,7 +9,6 @@ services:
         uid: 3490
       context: ./
       dockerfile:  Dockerfile
-    image: digitalocean.com/php
     container_name: app
     restart: unless-stopped
     tty: true
