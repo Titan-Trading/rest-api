@@ -5,8 +5,8 @@ services:
   app:
     build:
       args:
-        user: www
-        uid: 1000
+        user: appuser
+        uid: 3490
       context: ./
       dockerfile:  Dockerfile
     image: digitalocean.com/php

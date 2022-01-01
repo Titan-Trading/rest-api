@@ -7,20 +7,11 @@ ARG uid
 # Make future work directory as root
 RUN mkdir -p /var/www/
 
-# Add user for laravel application
-# RUN groupadd www
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
-
 # Change owner of work directory
-RUN chown $user /var/www
+# RUN chown $user /var/www
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
-
-# Set working directory
-WORKDIR /var/www
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -41,25 +32,37 @@ RUN apt-get update && apt-get install -y \
     git \
     libzip-dev \
     curl \
-    libpq-dev
+    libpq-dev \
+    libmcrypt-dev \
+    openssl
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
-RUN docker-php-ext-install pdo_mysql zip exif pcntl
+RUN docker-php-ext-install pdo_mysql mcrypt mbstring curl zip exif pcntl bcmath
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd
 RUN docker-php-ext-install opcache
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy existing application directory contents
 COPY . /var/www
 
+# Add user for laravel application
+# RUN groupadd www
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user /home/$user
+
 # Copy existing application directory permissions
-COPY --chown=$user:www . /var/www
+# COPY --chown=$user . /var/www
+
+# Set working directory
+WORKDIR /var/www
 
 # Change current user to what the setting in docker-compose.yml
 USER $user
