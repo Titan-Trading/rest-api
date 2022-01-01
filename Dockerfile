@@ -53,11 +53,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . /var/www
 
 # Add user for laravel application
-# RUN groupadd www
-RUN useradd -G www-data -u $uid -d /home/$user $user
+RUN groupadd $user
+RUN useradd -G $user -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
-    chown -R $user /home/$user && \
-    chown -R $user /var/www
+    chown -R $user:$user /home/$user && \
+    chown -R $user:$user /var/www
 
 # Copy existing application directory permissions
 # COPY --chown=$user . /var/www
