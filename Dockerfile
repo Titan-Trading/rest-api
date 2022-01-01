@@ -31,7 +31,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     libzip-dev \
-    curl \
     libpq-dev \
     libmcrypt-dev \
     openssl
@@ -40,7 +39,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
-RUN docker-php-ext-install curl libcurl pdo_mysql zip exif pcntl
+RUN docker-php-ext-install pdo_mysql zip exif pcntl
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd
 RUN docker-php-ext-install opcache
