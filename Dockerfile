@@ -8,8 +8,8 @@ ARG uid
 RUN mkdir -p /var/www/
 
 # Add user for laravel application
-RUN groupadd www-data
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN groupadd www
+RUN useradd -G www,www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
@@ -59,9 +59,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . /var/www
 
 # Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# COPY --chown=$user:www . /var/www
 
-# Change current user to www
+# Change current user to what the setting in docker-compose.yml
 USER $user
 
 # Install dependencies
