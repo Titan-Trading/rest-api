@@ -46,11 +46,11 @@ Route::middleware(['auth.jwt'])->group(function() {
     /**
      * Market indicators (CRUD, algorithm script)
      */
-    Route::get('/market-indicators', 'App\Http\Controllers\Trading\MarketIndicatorController@index');
-    Route::post('/market-indicators', 'App\Http\Controllers\Trading\MarketIndicatorController@store');
-    Route::get('/market-indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@show');
-    Route::put('/market-indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@update');
-    Route::delete('/market-indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@delete');
+    Route::get('/indicators', 'App\Http\Controllers\Trading\MarketIndicatorController@index');
+    Route::post('/indicators', 'App\Http\Controllers\Trading\MarketIndicatorController@store');
+    Route::get('/indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@show');
+    Route::put('/indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@update');
+    Route::delete('/indicators/{id}', 'App\Http\Controllers\Trading\MarketIndicatorController@delete');
 
     /**
      * Market types (CRUD)
@@ -113,16 +113,14 @@ Route::middleware(['auth.jwt'])->group(function() {
     Route::delete('/conditional-trades/{id}', 'App\Http\Controllers\Trading\ConditionalTradeController@delete');
 
     /**
-     * Bots (algorithm script, inputs)
+     * Bots and bot sessions (algorithm script, inputs, bot, exchange, back-test settings, etc.)
      */
     Route::get('/bots', 'App\Http\Controllers\Trading\BotController@index');
     Route::post('/bots', 'App\Http\Controllers\Trading\BotController@store');
+    Route::get('/bots/sessions', 'App\Http\Controllers\Trading\BotSessionController@allActive');
     Route::get('/bots/{id}', 'App\Http\Controllers\Trading\BotController@show');
     Route::put('/bots/{id}', 'App\Http\Controllers\Trading\BotController@update');
     Route::delete('/bots/{id}', 'App\Http\Controllers\Trading\BotController@delete');
-    /**
-     * Bot sessions (bot, exchange, back-test settings, etc.)
-     */
     Route::get('/bots/{botId}/sessions', 'App\Http\Controllers\Trading\BotSessionController@index');
     Route::post('/bots/{botId}/sessions', 'App\Http\Controllers\Trading\BotSessionController@store');
     Route::get('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@show');
@@ -137,9 +135,9 @@ Route::middleware(['auth.jwt'])->group(function() {
     Route::get('/orders/{id}', 'App\Http\Controllers\Trading\OrderController@show');
     Route::put('/orders/{id}', 'App\Http\Controllers\Trading\OrderController@update');
     Route::delete('/orders/{id}', 'App\Http\Controllers\Trading\OrderController@delete');
-    Route::get('/orders/{id}/fills', 'App\Http\Controllers\Trading\OrderController@showFills');
-    Route::post('/orders/{id}/fills', 'App\Http\Controllers\Trading\OrderController@storeFills');
-    Route::delete('/orders/{id}/fills', 'App\Http\Controllers\Trading\OrderController@deleteFills');
+    Route::get('/orders/{id}/fills', 'App\Http\Controllers\Trading\OrderController@getFills');
+    Route::post('/orders/{id}/fills', 'App\Http\Controllers\Trading\OrderController@storeFill');
+    Route::delete('/orders/{orderId}/fills/{id}', 'App\Http\Controllers\Trading\OrderController@deleteFill');
 
     /**
      * Event sourcing (resource, resource id, resource data before and after)

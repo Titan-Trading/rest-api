@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Ahc\Jwt\JWT;
 use App\Models\AccessToken;
 use App\Models\User;
+use App\Traits\AccessTokens;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,8 @@ use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
+    use AccessTokens;
+    
     protected $jwt;
 
     public function __construct()
@@ -42,7 +45,7 @@ class LoginController extends Controller
         // generate access token
         $jti = Str::uuid()->toString();
         $expiration = Carbon::now()->addSeconds(3600 * 4)->timestamp;
-        $audience = 'https://www.hometownticketing.com';
+        $audience = 'https://localhost:9000';
         $subject = 'user';
         $accessToken = $this->createToken($jti, $expiration, $audience, $subject, ['user']);
 
@@ -168,21 +171,5 @@ class LoginController extends Controller
         catch (Exception $ex) {
             return response(trans('messages.responses.401'), 401);
         }
-    }
-
-    /**
-     * Create an access token
-     */
-    private function createToken($jti, $expiration, $audience, $subject, array $scopes)
-    {
-        return $this->jwt->encode([
-            'jti' => $jti,
-            'iat' => Carbon::now()->timestamp,
-            'exp' => $expiration,
-            'aud' => $audience,
-            'iss' => env('APP_URL'),
-            'scopes' => $scopes,
-            'sub' => $subject,
-        ]);
     }
 }

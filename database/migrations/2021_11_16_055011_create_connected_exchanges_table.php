@@ -20,8 +20,8 @@ class CreateConnectedExchangesTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('exchange_id');
-            $table->string('api_key');
-            $table->string('api_key_secret');
+            $table->string('api_key')->nullable();
+            $table->string('api_key_secret')->nullable();
             $table->string('wallet_private_key')->nullable();
             $table->timestamps();
         });
