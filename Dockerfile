@@ -54,12 +54,16 @@ COPY . /var/www
 
 # Add user for laravel application
 # RUN groupadd www
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN useradd -G www-data -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
-    chown -R $user /home/$user
+    chown -R $user /home/$user \
+    chown -R $user /var/www
 
 # Copy existing application directory permissions
 # COPY --chown=$user . /var/www
+
+# change file permissions
+RUN chmod 777 /var/www
 
 # Set working directory
 WORKDIR /var/www
