@@ -56,7 +56,7 @@ COPY . /var/www
 # RUN groupadd www
 RUN useradd -G www-data -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
-    chown -R $user /home/$user \
+    chown -R $user /home/$user && \
     chown -R $user /var/www
 
 # Copy existing application directory permissions
