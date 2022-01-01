@@ -70,7 +70,7 @@ services:
         DOCKER_INFLUXDB_INIT_PASSWORD: password
         DOCKER_INFLUXDB_INIT_ORG: simple-trader
         DOCKER_INFLUXDB_INIT_BUCKET: simple-trader
-    volumes:
+    # volumes:
       # - influxdbdata:/var/lib/influxdb2
     networks:
       - app-network
