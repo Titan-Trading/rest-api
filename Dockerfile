@@ -54,7 +54,7 @@ COPY . /var/www
 
 # Add user for laravel application
 RUN groupadd $user
-RUN useradd -G $user -u $uid -d /home/$user $user
+RUN useradd -g $user -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user && \
     chown -R $user:$user /var/www
