@@ -81,11 +81,14 @@ class Authenticated
                 return response('Unauthorized', 401);
             }
 
+            // find user for api key
             $user = User::find($apiKeyRecord->user_id);
             if (!$user) {
                 Log::info('No user found');
                 return response('Unauthorized', 401);
             }
+
+            // verify request signature (base 64 encoded timestamp+method+endpoint+body with sha256)
 
             // bind user to request
             $request->merge(['user' => $user]);

@@ -1,0 +1,82 @@
+version: '3.8'
+services:
+
+  #PHP Service
+  app:
+    build:
+      args:
+        user: test
+        uid: 1000
+      context: ./
+      dockerfile:  Dockerfile
+    image: digitalocean.com/php
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+       - webdata:/var/www
+       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 9000:80
+    # - 9001:443
+    volumes:
+      - webdata:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  db:
+    image: mysql:5.7.22
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: simple_trader
+      MYSQL_ROOT_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+    
+  #InfluxDB Service
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8086:8086"
+    environment:
+        DOCKER_INFLUXDB_INIT_MODE: setup
+        DOCKER_INFLUXDB_INIT_USERNAME: admin
+        DOCKER_INFLUXDB_INIT_PASSWORD: password
+        DOCKER_INFLUXDB_INIT_ORG: simple-trader
+        DOCKER_INFLUXDB_INIT_BUCKET: simple-trader
+    volumes:
+      - influxdbdata:/var/lib/influxdb2
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge

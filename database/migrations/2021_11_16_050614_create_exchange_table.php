@@ -59,6 +59,6 @@ class CreateExchangeTable extends Migration
     {
         Schema::dropIfExists('exchange_market_type');
         Schema::dropIfExists('exchanges');
-        Schema::dropIfExists('exchange_types');
+        Schema::dropIfExists('market_types');
     }
 }

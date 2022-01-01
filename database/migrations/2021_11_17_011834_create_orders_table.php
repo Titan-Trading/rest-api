@@ -27,8 +27,8 @@ class CreateOrdersTable extends Migration
             $table->string('side'); // buy or sell
             $table->string('type'); // type of order (market, limit, etc)
             $table->string('fill_type'); // type of fulfillment
-            $table->decimal('quantity'); // quantity of the order
-            $table->decimal('price'); // price of the order
+            $table->decimal('quantity', 18, 8); // quantity of the order
+            $table->decimal('price', 18, 8); // price of the order
             $table->string('base_symbol'); // base symbol USD, BTC, ETH, etc.
             $table->string('target_symbol'); // target symbol, BTC, USD, LSK, etc.
             $table->timestamp('added_to_exchange_at')->nullable(); // when was the order added to the exchange
@@ -43,9 +43,10 @@ class CreateOrdersTable extends Migration
         Schema::create('fills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id'); // order that the fill took place on
-            $table->decimal('quantity'); // quantity of the fill
-            $table->decimal('price'); // price of the fill
+            $table->decimal('quantity', 18, 8); // quantity of the fill
+            $table->decimal('price', 18, 8); // price of the fill
             $table->timestamp('filled_at');
+            $table->timestamps();
         });
     }
 

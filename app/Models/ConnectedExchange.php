@@ -19,6 +19,10 @@ class ConnectedExchange extends Model
         'wallet_private_key',
     ];
 
+    protected $hidden = [
+        'api_key_secret'
+    ];
+
     /**
      * User account that's connected to the exchange
      */
