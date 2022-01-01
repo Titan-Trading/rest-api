@@ -1,14 +1,19 @@
 FROM php:8.0-fpm
 
+# Arguments defined in docker-compose.yml
+ARG user
+ARG uid
+
 # Make future work directory as root
 RUN mkdir -p /var/www/
 
 # Add user for laravel application
-RUN groupadd www
-RUN useradd -ms /bin/bash -g www www
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
 
 # Change owner of work directory
-RUN chown www /var/www
+RUN chown $user /var/www
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
@@ -53,19 +58,19 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . /var/www
 
 # Copy existing application directory permissions
-COPY --chown=www:www . /var/www
+COPY --chown=www-data:www-data . /var/www
 
 # Change current user to www
-USER www
+USER $user
 
 # Install dependencies
 RUN composer install
 
 # Volume to use
-VOLUME ["/var/www"]
+# VOLUME ["/var/www"]
 
 # Set entrypoint permissions
-RUN chmod +x ./start_up.sh
+# RUN chmod +x ./start_up.sh
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
