@@ -8,7 +8,7 @@ ARG uid
 RUN mkdir -p /var/www/
 
 # Add user for laravel application
-RUN groupadd www
+# RUN groupadd www
 RUN useradd -G www,www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
