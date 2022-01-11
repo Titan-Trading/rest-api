@@ -17,14 +17,14 @@ class ConnectedExchangeController extends Controller
     public function index(Request $request)
     {
         $query = ConnectedExchange::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'wallet_private_key')
-            /*->with([
-                'user' => function($q) {
-                    $q->select('id', 'name', 'email');
-                },
+            ->with([
+                // 'user' => function($q) {
+                //     $q->select('id', 'name', 'email');
+                // },
                 'exchange' => function($q) {
                     $q->select('id', 'name');
                 }
-            ])*/;
+            ]);
 
         $connectedExchanges = $query->get();
 
