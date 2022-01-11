@@ -17,7 +17,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = Order::query()->get();
+        $orders = Order::query()->with([
+            'connectedExchange.exchange'
+        ])->get();
 
         return response()->json($orders, 200);
     }

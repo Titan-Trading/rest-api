@@ -9,7 +9,7 @@ class ConditionalTrade extends Model
 {
     use HasFactory;
 
-    protected $table = 'conditional_trade';
+    protected $table = 'conditional_trades';
 
     protected $fillable = [
         'user_id',
