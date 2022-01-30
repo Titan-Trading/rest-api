@@ -21,7 +21,7 @@ Route::post('/auth/login', 'App\Http\Controllers\Auth\LoginController@login');
 Route::post('/auth/logout', 'App\Http\Controllers\Auth\LoginController@logout');
 Route::post('/auth/refresh', 'App\Http\Controllers\Auth\LoginController@refresh');
 
-Route::middleware(['auth.jwt'])->group(function() {
+Route::middleware(['auth'])->group(function() {
     /**
      * Currency types (CRUD)
      */

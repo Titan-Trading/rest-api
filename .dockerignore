@@ -2,6 +2,7 @@
 .github
 .DS_Store
 .idea
+.env
 node_modules
 vendor
 storage/framework/cache/**
