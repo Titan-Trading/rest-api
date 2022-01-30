@@ -28,29 +28,18 @@ class Authenticated
 
         if ($accessTokenHeader) {
             try {
-                $jwt = new JWT(env('APP_KEY'), 'HS512', 3600 * 4);
+                $jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 5 mins
 
-                // decode, check expiration
-                $decodedJWT = $jwt->decode($accessTokenHeader);
+                // decode, check expiration (throws exception)
+                $jwtData = $jwt->decode($accessTokenHeader);
 
-                // get access token from database
-                $tokenRecord = AccessToken::whereAccessToken($accessTokenHeader)->first();
-
-                // no record found
-                if (!$tokenRecord) {
-                    Log::info('No JWT record found');
+                // no metadata or user id
+                if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
                     return response('Unauthorized', 401);
                 }
 
-                // token was revoked
-                if ($tokenRecord->revoked) {
-                    Log::info('JWT revoked');
-                    return response('Unauthorized', 401);
-                }
-
-                $user = User::find($tokenRecord->user_id);
+                $user = User::find($jwtData['metadata']->user_id);
                 if (!$user) {
-                    Log::info('No user found');
                     return response('Unauthorized', 401);
                 }
 

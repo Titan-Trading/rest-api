@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   #PHP Service
-  app:
+  api-1:
     build:
       args:
         user: test
@@ -10,33 +10,57 @@ services:
       context: ./
       dockerfile:  Dockerfile
     image: digitalocean.com/php
-    container_name: app
+    container_name: api-1
+    hostname: api-1
     restart: unless-stopped
+    depends_on:
+      - db
     tty: true
-    environment:
-      SERVICE_NAME: app
-      SERVICE_TAGS: dev
+    env_file:
+      - .one.env
+    # environment:
+    #   SERVICE_NAME: app
+    #   SERVICE_TAGS: dev
     working_dir: /var/www
     volumes:
        - webdata:/var/www
        - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    networks:
-      - app-network
+  api-2:
+    build:
+      args:
+        user: test
+        uid: 1000
+      context: ./
+      dockerfile:  Dockerfile
+    image: digitalocean.com/php
+    container_name: api-2
+    hostname: api-2
+    restart: unless-stopped
+    depends_on:
+      - db
+    tty: true
+    env_file:
+      - .two.env
+    working_dir: /var/www
+    volumes:
+       - webdata:/var/www
+       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
   #Nginx Service
-  webserver:
+  api-proxy:
     image: nginx:alpine
-    container_name: webserver
+    container_name: api-proxy
+    hostname: api-proxy
     restart: unless-stopped
-    tty: true
+    depends_on:
+      - api-1
+      - api-2
     ports:
-      - 9000:80
-    # - 9001:443
+      - "8001:8001"
+    tty: true
     volumes:
       - webdata:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-    networks:
-      - app-network
 
   #MySQL Service
   db:
@@ -54,8 +78,6 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
-    networks:
-      - app-network
     
   #InfluxDB Service
   influxdb:
@@ -73,13 +95,12 @@ services:
         DOCKER_INFLUXDB_INIT_BUCKET: simple-trader
     volumes:
       - influxdbdata:/var/lib/influxdb2
-    networks:
-      - app-network
 
 #Docker Networks
 networks:
-  app-network:
-    driver: bridge
+  default:
+    name: 'simple-trader'
+    external: true
 
 #Volumes
 volumes:

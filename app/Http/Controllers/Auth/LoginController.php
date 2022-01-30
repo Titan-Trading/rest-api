@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Ahc\Jwt\JWT;
-use App\Models\AccessToken;
+use App\Models\RefreshToken;
 use App\Models\User;
 use App\Traits\AccessTokens;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class LoginController extends Controller
@@ -21,7 +22,7 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        $this->jwt = new JWT(env('APP_KEY'), 'HS512', 3600 * 4);
+        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 5 mins
     }
 
     public function login(Request $request)
@@ -44,25 +45,26 @@ class LoginController extends Controller
 
         // generate access token
         $jti = Str::uuid()->toString();
-        $expiration = Carbon::now()->addSeconds(3600 * 4)->timestamp;
-        $audience = 'https://localhost:9000';
+        $expiration = Carbon::now()->addSeconds(300)->timestamp;
+        $audience = 'simple-trader';
         $subject = 'user';
-        $accessToken = $this->createToken($jti, $expiration, $audience, $subject, ['user']);
-
+        $metadata = [
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email
+        ];
+        $accessToken = $this->createAccessToken($jti, $expiration, $audience, $subject, ['user'], $metadata);
+        
         // generate refresh token
-        $refreshToken = Str::random(512);
+        $refreshToken = Str::random(1024);
 
-        // revoke all previous access tokens for a user
-        AccessToken::whereUserId($user->id)->update(['revoked' => true]);
+        // revoke all previous refresh tokens for a user
+        RefreshToken::whereUserId($user->id)->update(['revoked' => true]);
 
         // store token pair
-        AccessToken::create([
+        RefreshToken::create([
             'user_id' => $user->id,
-            'jti' => $jti,
             'expiration' => $expiration,
-            'audience' => $audience,
-            'subject' => $subject,
-            'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
             'updated_at' => Carbon::now(),
             'created_at' => Carbon::now()
@@ -83,17 +85,24 @@ class LoginController extends Controller
             return response('Unauthorized', 401);
         }
 
-        $tokenRecord = AccessToken::whereAccessToken($accessToken)->first();
+        try {
+            // decode, check expiration (throws exception)
+            $jwtData = $this->jwt->decode($accessToken);
 
-        // no access token foun
-        if (!$tokenRecord) {
+            // no metadata or user id
+            if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
+                return response('Unauthorized', 401);
+            }
+
+            // revoke all refresh tokens for a user
+            RefreshToken::whereUserId($jwtData['metadata']->user_id)->update(['revoked' => true]);
+
+            return response('OK', 200);
+        }
+        catch(Exception $ex) {
+            Log::info($ex->getMessage());
             return response('Unauthorized', 401);
         }
-
-        // revoke all previous access tokens for a user
-        AccessToken::whereUserId($tokenRecord->user_id)->update(['revoked' => true]);
-
-        return response()->json('Success', 200);
     }
 
     public function refresh(Request $request)
@@ -108,11 +117,25 @@ class LoginController extends Controller
         $refreshToken = $request->get('refresh_token');
 
         // no refresh token
-        if (!$refreshToken) {
+        if (!$request->has('refresh_token') || !$refreshToken) {
             return response('Unauthorized', 401);
         }
 
-        $tokenRecord = AccessToken::whereRefreshToken($refreshToken)->first();
+        try {
+            // decode, check expiration (throws exception)
+            $jwtData = $this->jwt->decode($accessToken);
+
+            // no metadata or user id
+            if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
+                return response('Unauthorized', 401);
+            }
+        }
+        catch(Exception $ex) {
+            Log::info($ex->getMessage());
+            return response('Unauthorized', 401);
+        }
+
+        $tokenRecord = RefreshToken::whereRefreshToken($refreshToken)->first();
 
         // no access token found for the refresh token
         if (!$tokenRecord) {
@@ -121,11 +144,6 @@ class LoginController extends Controller
 
         // token has been revoked
         if ($tokenRecord->revoked) {
-            return response('Unauthorized', 401);
-        }
-
-        // access token does not match the access token used to generate the refresh token
-        if ($accessToken != $tokenRecord->access_token) {
             return response('Unauthorized', 401);
         }
 
@@ -139,25 +157,26 @@ class LoginController extends Controller
         try {
             // generate access token
             $jti = Str::uuid()->toString();
-            $expiration = Carbon::now()->addSeconds(3600 * 4)->timestamp;
+            $expiration = Carbon::now()->addSeconds(300)->timestamp;
             $audience = 'https://www.simpletrader.com';
             $subject = 'user';
-            $accessToken = $this->createToken($jti, $expiration, $audience, $subject, ['user']);
+            $metadata = [
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email
+            ];
+            $accessToken = $this->createAccessToken($jti, $expiration, $audience, $subject, ['user'], $metadata);
 
             // generate refresh token
-            $refreshToken = Str::random(512);
+            $refreshToken = Str::random(1024);
 
-            // revoke all previous access tokens for a user
-            AccessToken::whereUserId($user->id)->update(['revoked' => true]);
+            // revoke all previous refresh tokens for a user
+            RefreshToken::whereUserId($user->id)->update(['revoked' => true]);
 
             // store token pair
-            AccessToken::create([
+            RefreshToken::create([
                 'user_id' => $user->id,
-                'jti' => $jti,
                 'expiration' => $expiration,
-                'audience' => $audience,
-                'subject' => $subject,
-                'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'updated_at' => Carbon::now(),
                 'created_at' => Carbon::now()
@@ -169,7 +188,8 @@ class LoginController extends Controller
             ], 200);
         }
         catch (Exception $ex) {
-            return response(trans('messages.responses.401'), 401);
+            Log::info($ex->getMessage());
+            return response('Unauthorized', 401);
         }
     }
 }

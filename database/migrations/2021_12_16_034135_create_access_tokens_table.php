@@ -13,15 +13,11 @@ class CreateAccessTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('access_tokens', function (Blueprint $table) {
+        Schema::create('refresh_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('jti')->unique();
+            $table->string('refresh_token', 1024);
             $table->foreignId('user_id');
-            $table->string('audience');
             $table->integer('expiration');
-            $table->string('subject');
-            $table->text('access_token');
-            $table->text('refresh_token');
             $table->boolean('revoked')->default(false);
             $table->timestamps();
         });
@@ -34,6 +30,6 @@ class CreateAccessTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('access_tokens');
+        Schema::dropIfExists('refresh_tokens');
     }
 }
