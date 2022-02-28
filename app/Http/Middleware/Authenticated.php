@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Ahc\Jwt\JWT;
 use App\Models\ApiKey;
+use Carbon\Carbon;
 
 class Authenticated
 {
@@ -24,7 +25,7 @@ class Authenticated
     {
         // check for custom auth headers
         $accessTokenHeader = $request->header('X-Auth-Token');
-        $apiKeyHeader      = $request->header('X-Api-Key');
+        $apiKeyHeader      = $request->header('ST-API-KEY');
 
         if ($accessTokenHeader) {
             try {
@@ -50,11 +51,14 @@ class Authenticated
                 });
             }
             catch (Exception $ex) {
-                Log::info($ex->getMessage());
+                Log::info($ex);
                 return response('Unauthorized', 401);
             }
         }
         else if($apiKeyHeader) {
+            $timestamp = $request->header('ST-API-TIMESTAMP');
+            $signature = $request->header('ST-API-SIGNATURE');
+
             // get api key from database
             $apiKeyRecord = ApiKey::where('key', $apiKeyHeader)->first();
 
@@ -70,6 +74,11 @@ class Authenticated
                 return response('Unauthorized', 401);
             }
 
+            // api key has expired
+            // if ($apiKeyRecord->expiration <= Carbon::now()->timestamp) {
+            //     return response('Unauthorized', 401);
+            // }
+
             // find user for api key
             $user = User::find($apiKeyRecord->user_id);
             if (!$user) {
@@ -77,7 +86,17 @@ class Authenticated
                 return response('Unauthorized', 401);
             }
 
-            // verify request signature (base 64 encoded timestamp+method+endpoint+body with sha256)
+            // get request body content
+            $bodyContent = !empty($request->getContent()) ? $request->getContent() : '';
+
+            // timestamp + method + endpoint + body
+            $toEncode = $timestamp . $request->method() . $request->getPathInfo() . $bodyContent;
+            $hashed = base64_encode(hash_hmac('sha512', $toEncode, $apiKeyRecord->secret, true));
+
+            // check generated signature against signature sent
+            if ($hashed !== $signature) {
+                return response('Unauthorized', 401);
+            }
 
             // bind user to request
             $request->merge(['user' => $user]);
