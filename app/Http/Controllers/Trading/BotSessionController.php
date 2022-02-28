@@ -4,10 +4,21 @@ namespace App\Http\Controllers\Trading;
 use App\Http\Controllers\Controller;
 use App\Models\Bot;
 use App\Models\BotSession;
+use App\Services\MessageBus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BotSessionController extends Controller
 {
+    private $messageBus;
+    
+    public function __construct(MessageBus $messageBus)
+    {
+        parent::__construct();
+
+        $this->messageBus = $messageBus;
+    }
+
     /**
      * Get list of all active sessions
      *
@@ -22,7 +33,7 @@ class BotSessionController extends Controller
     }
 
     /**
-     * Get list of sessions for a bot
+     * Get list of sessions for a bot (for the current user)
      *
      * @param Request $request
      * @param integer $botId
@@ -43,7 +54,7 @@ class BotSessionController extends Controller
             ], 404);
         }
 
-        $sessions = BotSession::whereBotId($botId)->get();
+        $sessions = BotSession::whereUserId($request->user()->id)->whereBotId($botId)->get();
 
         return response()->json($sessions, 200);
     }
@@ -91,6 +102,21 @@ class BotSessionController extends Controller
         $session->parameters = $request->parameters;
         $session->mode = $request->mode;
         $session->save();
+
+        /**
+         * Add new bot session onto message bus
+         * - Switch which topic the message is added to based on if the session is live trading or backtesting
+         */
+
+        $this->messageBus->sendMessage('bot-sessions', [
+            'topic' => 'bot-sessions',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'CREATED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $session->toArray()
+        ]);
 
         return response()->json($session, 201);
     }
@@ -190,6 +216,21 @@ class BotSessionController extends Controller
         $session->mode = $request->mode;
         $session->save();
 
+        /**
+         * Add bot session update onto message bus
+         * - Switch which topic the message is added to based on if the session is live trading or backtesting
+         */
+
+        $this->messageBus->sendMessage('bot-sessions', [
+            'topic' => 'bot-sessions',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'UPDATED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $session->toArray()
+        ]);
+
         return response()->json($session, 200);
     }
 
@@ -230,6 +271,21 @@ class BotSessionController extends Controller
         }
 
         $session->delete();
+
+        /**
+         * Add bot session delete onto message bus
+         * - Switch which topic the message is added to based on if the session is live trading or backtesting
+         */
+
+        $this->messageBus->sendMessage('bot-sessions', [
+            'topic' => 'bot-sessions',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'DELETED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $session->toArray()
+        ]);
 
         return response('Success', 200);
     }
