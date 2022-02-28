@@ -76,7 +76,7 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - dbdata:/var/lib/mysql
+      - api-dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     
   #InfluxDB Service
@@ -104,8 +104,12 @@ networks:
 
 #Volumes
 volumes:
-  dbdata:
+  api-dbdata:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/mysql
   influxdbdata:
     driver: local
   webdata:

@@ -48,11 +48,6 @@ class RegisterServiceCommand extends Command
         $endPoints = [];
 
         foreach ($routeCollection as $value) {
-
-            if(strpos($value->uri(), 'api') === false) {
-                continue;
-            }
-
             foreach($value->methods() as $method) {
                 $url = '/' . $value->uri();
 
@@ -62,7 +57,7 @@ class RegisterServiceCommand extends Command
                     $routePattern = '^' . preg_replace('#\{.*?\}#s', '(?:([^\/]+?))', str_replace('/', '\/', $url)) . '?$';
                 }
 
-                $this->info($routePattern);
+                $this->info($method . ' ' . $routePattern);
 
                 $endPoints[] = [
                     'url' => $routePattern,

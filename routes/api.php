@@ -142,11 +142,11 @@ Route::middleware(['auth'])->group(function() {
     /**
      * Event sourcing (resource, resource id, resource data before and after)
      */
-    Route::get('/events', 'App\Http\Controllers\EventSourceController@index');
-    Route::post('/events', 'App\Http\Controllers\EventSourceController@store');
-    Route::get('/events/{id}', 'App\Http\Controllers\EventSourceController@show');
-    Route::put('/events/{id}', 'App\Http\Controllers\EventSourceController@update');
-    Route::delete('/events/{id}', 'App\Http\Controllers\EventSourceController@delete');
+    // Route::get('/events', 'App\Http\Controllers\EventSourceController@index');
+    // Route::post('/events', 'App\Http\Controllers\EventSourceController@store');
+    // Route::get('/events/{id}', 'App\Http\Controllers\EventSourceController@show');
+    // Route::put('/events/{id}', 'App\Http\Controllers\EventSourceController@update');
+    // Route::delete('/events/{id}', 'App\Http\Controllers\EventSourceController@delete');
 
     /**
      * News (authors, categories, sources, articles, analysis, etc.)
