@@ -40,7 +40,7 @@ class CreateBotsTables extends Migration
         });
 
         /**
-         * The results of a bot's session (max draw-down, profit, )
+         * The results of a bot's session
          */
         Schema::create('bot_session_results', function (Blueprint $table) {
             $table->id();

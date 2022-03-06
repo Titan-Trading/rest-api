@@ -77,7 +77,8 @@ class RegisterServiceCommand extends Command
                 'supportedCommunicationChannels' => ['rest'],
                 'hostname' => 'api-proxy',
                 'port' => 8001,
-                'endpoints' => $endPoints
+                'endpoints' => $endPoints,
+                'commands' => []
             ]);
 
             $this->info('Added service to registry (' . count($endPoints) . ' routes)!');
