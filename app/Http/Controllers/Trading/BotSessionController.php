@@ -14,8 +14,6 @@ class BotSessionController extends Controller
     
     public function __construct(MessageBus $messageBus)
     {
-        parent::__construct();
-
         $this->messageBus = $messageBus;
     }
 
