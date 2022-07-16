@@ -125,6 +125,8 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/bots/{botId}/sessions', 'App\Http\Controllers\Trading\BotSessionController@store');
     Route::get('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@show');
     Route::put('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@update');
+    Route::put('/bots/{botId}/sessions/{id}/activate', 'App\Http\Controllers\Trading\BotSessionController@activate');
+    Route::put('/bots/{botId}/sessions/{id}/deactivate', 'App\Http\Controllers\Trading\BotSessionController@deactivate');
     Route::delete('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@delete');
 
     /**

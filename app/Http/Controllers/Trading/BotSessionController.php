@@ -25,7 +25,7 @@ class BotSessionController extends Controller
      */
     public function allActive(Request $request)
     {
-        $sessions = BotSession::query()->with(['connectedExchange', 'bot'])->get();
+        $sessions = BotSession::query()->whereActive(true)->with(['connectedExchange', 'bot'])->get();
 
         return response()->json($sessions, 200);
     }
