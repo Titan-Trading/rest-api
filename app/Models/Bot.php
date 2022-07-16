@@ -14,6 +14,7 @@ class Bot extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'algorithm_text'
+        'algorithm_text',
+        'parameter_options'
     ];
 }

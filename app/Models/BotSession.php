@@ -15,8 +15,10 @@ class BotSession extends Model
         'user_id',
         'connected_exchange_id',
         'bot_id',
+        'name',
         'parameters',
         'mode',
+        'active',
         'started_at',
         'ended_at'
     ];

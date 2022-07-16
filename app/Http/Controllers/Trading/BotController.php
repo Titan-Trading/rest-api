@@ -30,16 +30,19 @@ class BotController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'algorithm_text' => 'required'
+            'algorithm_text' => 'required',
+            'parameter_options' => 'required'
         ], [
             'name_required' => 'Name is required',
-            'algorithm_text_required' => 'Algorithm text is required'
+            'algorithm_text_required' => 'Algorithm text is required',
+            'parameter_options' => 'Parameter options is required'
         ]);
 
         $bot = new Bot();
         $bot->user_id = $request->user()->id;
         $bot->name = $request->name;
         $bot->algorithm_text = $request->algorithm_text;
+        $bot->parameter_options = $request->parameter_options;
         $bot->save();
 
         return response()->json($bot, 201);
@@ -94,14 +97,17 @@ class BotController extends Controller
 
         $this->validate($request, [
             'name' => 'required',
-            'algorithm_text' => 'required'
+            'algorithm_text' => 'required',
+            'parameter_options' => 'required'
         ], [
             'name_required' => 'Name is required',
-            'algorithm_text_required' => 'Algorithm text is required'
+            'algorithm_text_required' => 'Algorithm text is required',
+            'parameter_options' => 'Parameter options is required'
         ]);
 
         $bot->name = $request->name;
         $bot->algorithm_text = $request->algorithm_text;
+        $bot->parameter_options = $request->parameter_options;
         $bot->save();
 
         return response()->json($bot, 200);
