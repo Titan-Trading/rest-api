@@ -40,7 +40,7 @@ class CreateOrdersTable extends Migration
         /**
          * Order fills that took place
          */
-        Schema::create('fills', function (Blueprint $table) {
+        Schema::create('order_fills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id'); // order that the fill took place on
             $table->decimal('quantity', 18, 8); // quantity of the fill
@@ -57,7 +57,7 @@ class CreateOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fills');
+        Schema::dropIfExists('order_fills');
         Schema::dropIfExists('orders');
     }
 }

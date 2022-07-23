@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Currency;
+use App\Models\Trading\Currency;
 use Illuminate\Http\Request;
 
 class CurrencyController extends Controller

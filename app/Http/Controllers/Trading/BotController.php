@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bot;
+use App\Models\Trading\Bot;
 use Illuminate\Http\Request;
 
 class BotController extends Controller

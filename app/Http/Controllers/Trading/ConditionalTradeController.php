@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\ConditionalTrade;
+use App\Models\Trading\ConditionalTrade;
 use Illuminate\Http\Request;
 
 class ConditionalTradeController extends Controller

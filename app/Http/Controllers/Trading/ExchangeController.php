@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exchange;
-use App\Models\Symbol;
+use App\Models\Trading\Exchange;
+use App\Models\Trading\Symbol;
 use Illuminate\Http\Request;
 use App\Services\InfluxDB;
 use Exception;

@@ -16,11 +16,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ImageSeeder::class,
             UserSeeder::class,
+            ApiKeySeeder::class,
             ExchangeSeeder::class,
             CurrencyPairSeeder::class,
             ConnectedExchangeSeeder::class,
-            MarketIndicatorSeeder::class,
-            // NewsSourceSeeder::class,
+            IndicatorSeeder::class,
+            // SourceSeeder::class,
         ]);
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Fill;
-use App\Models\Order;
+use App\Models\Trading\OrderFill;
+use App\Models\Trading\Order;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -230,7 +230,7 @@ class OrderController extends Controller
             ], 404);
         }
 
-        $fills = Fill::whereOrderId($id)->get();
+        $fills = OrderFill::whereOrderId($id)->get();
 
         return response()->json($fills, 200);
     }
@@ -267,7 +267,7 @@ class OrderController extends Controller
             'filled_at_required' => 'Filled at timestamp is required'
         ]);
 
-        $fill = new Fill();
+        $fill = new OrderFill();
         $fill->order_id = $order->id;
         $fill->quantity = $request->quantity;
         $fill->price = $request->price;
@@ -300,7 +300,7 @@ class OrderController extends Controller
             ], 404);
         }
 
-        $fill = Fill::find($id);
+        $fill = OrderFill::find($id);
         if(!$fill) {
             return response()->json([
                 'message' => 'Order fill not found'

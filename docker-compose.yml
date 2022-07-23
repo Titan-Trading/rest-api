@@ -14,7 +14,7 @@ services:
     hostname: api-1
     restart: unless-stopped
     depends_on:
-      - db
+      - api-db
     tty: true
     env_file:
       - .one.env
@@ -37,7 +37,7 @@ services:
     hostname: api-2
     restart: unless-stopped
     depends_on:
-      - db
+      - api-db
     tty: true
     env_file:
       - .two.env
@@ -63,9 +63,9 @@ services:
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
 
   #MySQL Service
-  db:
+  api-db:
     image: mysql:5.7.22
-    container_name: db
+    container_name: api-db
     restart: unless-stopped
     tty: true
     ports:
@@ -78,23 +78,6 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
-    
-  #InfluxDB Service
-  influxdb:
-    image: influxdb:latest
-    container_name: influxdb
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "8086:8086"
-    environment:
-        DOCKER_INFLUXDB_INIT_MODE: setup
-        DOCKER_INFLUXDB_INIT_USERNAME: admin
-        DOCKER_INFLUXDB_INIT_PASSWORD: password
-        DOCKER_INFLUXDB_INIT_ORG: simple-trader
-        DOCKER_INFLUXDB_INIT_BUCKET: simple-trader
-    volumes:
-      - influxdbdata:/var/lib/influxdb2
 
 #Docker Networks
 networks:
@@ -106,8 +89,10 @@ networks:
 volumes:
   dbdata:
     driver: local
-  influxdbdata:
-    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/mysql
   webdata:
     driver: local
     driver_opts:

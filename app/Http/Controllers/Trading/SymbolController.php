@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Symbol;
+use App\Models\Trading\Symbol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

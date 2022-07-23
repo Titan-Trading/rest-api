@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\ConnectedExchange;
+use App\Models\Trading\ConnectedExchange;
+use App\Services\MessageBus;
 use Illuminate\Http\Request;
 
 class ConnectedExchangeController extends Controller
@@ -111,9 +112,9 @@ class ConnectedExchangeController extends Controller
         ]);
 
         $connectedExchange->exchange_id = $request->exchange_id;
-        $connectedExchange->api_key = $request->api_key ? $request->api_key : null;
-        $connectedExchange->api_key_secret = $request->api_key_secret ? $request->api_key_secret : null;
-        $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : null;
+        $connectedExchange->api_key = $request->api_key ? $request->api_key : $connectedExchange->api_key;
+        $connectedExchange->api_key_secret = $request->api_key_secret ? $request->api_key_secret : $connectedExchange->api_key_secret;
+        $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $connectedExchange->wallet_private_key;
         $connectedExchange->save();
 
         return response()->json($connectedExchange, 200);

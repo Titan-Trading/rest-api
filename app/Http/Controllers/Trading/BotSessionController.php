@@ -2,8 +2,9 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bot;
-use App\Models\BotSession;
+use App\Models\Trading\Bot;
+use App\Models\Trading\BotSession;
+use App\Services\MessageBus;
 use Illuminate\Http\Request;
 
 class BotSessionController extends Controller

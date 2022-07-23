@@ -30,15 +30,33 @@ class ApiKeyController extends Controller
         return response()->json($apiKey, 200);
     }
 
+    public function update(Request $request, $id)
+    {
+        $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $apiKey = ApiKey::whereId($id)->whereUserId($request->user()->id)->first();
+        if(!$apiKey) {
+            return response()->json([
+                'message' => 'Not found'
+            ], 404);
+        }
+    }
+
     public function delete(Request $request, $id)
     {
         $apiKey = ApiKey::find($id);
         if(!$apiKey) {
-            return response('Not found', 404);
+            return response()->json([
+                'message' => 'Not found'
+            ], 404);
         }
 
         $apiKey->delete();
 
-        return response('Success', 200);
+        return response()->json([
+            'message' => 'Success'
+        ], 200);
     }
 }

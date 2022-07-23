@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Exchange;
+use App\Models\Trading\Exchange;
 use App\Models\Image;
-use App\Models\MarketType;
+use App\Models\Trading\MarketType;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
