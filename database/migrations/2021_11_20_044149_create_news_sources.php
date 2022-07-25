@@ -20,6 +20,7 @@ class CreateNewsSources extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -30,6 +31,7 @@ class CreateNewsSources extends Migration
             $table->foreignId('source_id');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -43,6 +45,7 @@ class CreateNewsSources extends Migration
             $table->text('description')->nullable();
             $table->string('website_url');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -54,6 +57,7 @@ class CreateNewsSources extends Migration
             $table->string('name');
             $table->text('url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -72,6 +76,7 @@ class CreateNewsSources extends Migration
             $table->longText('content_text')->nullable();
             $table->timestamp('published_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

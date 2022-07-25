@@ -6,30 +6,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProductOrder extends Model
+class ProductOrderPayment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'product_orders';
+    protected $table = 'product_order_payments';
 
     protected $fillable = [
-        'seller_id',
+        'order_id',
         'buyer_id',
-        'product_id',
-        'product_price_id',
-        'discount_code_id',
+        'payment_processor_type_id',
+        'payment_processor_id',
+        'payment_process_account_id',
         'status',
-        'next_payment_at'
+        'commission_amount',
+        'tax_amount',
+        'paid_amount'
     ];
 
     /**
-     * User that is selling the product in the order
+     * Order that the payment is for
      *
      * @return void
      */
-    public function seller()
+    public function order()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(ProductOrder::class, 'order_id');
     }
 
     /**
@@ -43,16 +45,6 @@ class ProductOrder extends Model
     }
 
     /**
-     * Product that was sold with the order
-     *
-     * @return void
-     */
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id');
-    }
-
-    /**
      * Payment method used on the order
      *
      * @return void
@@ -60,15 +52,5 @@ class ProductOrder extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentProcessor::class, 'payment_method_type_id');
-    }
-
-    /**
-     * The discount code applied to the order
-     *
-     * @return void
-     */
-    public function discountCode()
-    {
-        return $this->hasOne(DiscountCode::class, 'discount_code_id');
     }
 }

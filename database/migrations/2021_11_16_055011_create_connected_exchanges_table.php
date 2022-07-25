@@ -24,6 +24,7 @@ class CreateConnectedExchangesTable extends Migration
             $table->string('api_key_secret')->nullable();
             $table->string('wallet_private_key')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

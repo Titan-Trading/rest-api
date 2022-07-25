@@ -28,6 +28,7 @@ class CreateConditionalTradesTable extends Migration
             $table->string('base_symbol'); // base symbol USD, BTC, ETH, etc.
             $table->string('target_symbol'); // target symbol, BTC, USD, LSK, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -38,6 +39,7 @@ class CreateConditionalTradesTable extends Migration
             $table->string('name'); // name of the indicator
             $table->boolean('is_active'); // is the indicator active and able to be used
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -49,6 +51,7 @@ class CreateConditionalTradesTable extends Migration
             $table->string('key'); // key to find the metadata
             $table->string('value'); // value of the metadata
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -61,6 +64,7 @@ class CreateConditionalTradesTable extends Migration
             $table->foreignId('value_id'); // value record to compare to
             $table->string('comparative_operator'); // equal to, greater than, less than, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -70,6 +74,7 @@ class CreateConditionalTradesTable extends Migration
             $table->id();
             $table->string('value_type'); // type of value
             $table->string('value'); // value
+            $table->softDeletes();
         });
 
         /**
@@ -82,6 +87,7 @@ class CreateConditionalTradesTable extends Migration
             $table->integer('precedence')->default(1); // the precedence that the condition is applied
             $table->string('boolean_operator'); // AND, OR, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

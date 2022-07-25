@@ -3,9 +3,23 @@
 namespace App\Http\Controllers\Marketplace;
 
 use App\Http\Controllers\Controller;
+use App\Models\Marketplace\PaymentProcessorType;
 use Illuminate\Http\Request;
 
 class PaymentProcessorTypeController extends Controller
 {
-    //
+    /**
+     * Get list of payment processor types
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function index(Request $request)
+    {
+        $paymentProcessorTypes = PaymentProcessorType::query();
+
+        $paymentProcessorTypes = $paymentProcessorTypes->get();
+
+        return response()->json($paymentProcessorTypes);
+    }
 }

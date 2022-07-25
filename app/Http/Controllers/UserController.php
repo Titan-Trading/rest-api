@@ -125,6 +125,14 @@ class UserController extends Controller
             'profile_image_id_exists' => 'Profile image does not exist'
         ]);
 
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->remember_token = '';
+        $user->profile_image_id = $request->profile_image_id;
+        $user->default_payment_method_id = $request->default_payment_method_id ? $request->default_payment_method_id : null;
+        $user->save();
+
         return response()->json($user, 200);
     }
 

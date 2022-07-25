@@ -20,6 +20,7 @@ class CreateAccessTokensTable extends Migration
             $table->integer('expiration');
             $table->boolean('revoked')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

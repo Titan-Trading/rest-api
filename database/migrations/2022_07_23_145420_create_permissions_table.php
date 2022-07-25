@@ -21,12 +21,14 @@ class CreatePermissionsTable extends Migration
             $table->string('action')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('permission_role', function (Blueprint $table) {
             $table->foreignId('permission_id');
             $table->foreignId('role_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

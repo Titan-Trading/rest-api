@@ -258,6 +258,9 @@ Route::middleware(['auth'])->group(function() {
          * Product categories
          */
         Route::get('/categories', 'CategoryController@index');
+        Route::post('/categories', 'CategoryController@store');
+        Route::put('/categories/{id}', 'CategoryController@update');
+        Route::delete('/categories/{id}', 'CategoryController@delete');
 
         /**
          * Products
@@ -269,10 +272,22 @@ Route::middleware(['auth'])->group(function() {
         Route::delete('/products/{id}', 'ProductController@delete');
 
         /**
+         * Product reviews
+         */
+        Route::get('/products/{id}/reviews', 'ProductReviewController@index');
+        Route::post('/products/{id}/reviews', 'ProductReviewController@store');
+        Route::get('/products/{productId}/reviews/{id}', 'ProductReviewController@show');
+        Route::put('/products/{productId}/reviews/{id}', 'ProductReviewController@update');
+        Route::delete('/products/{productId}/reviews/{id}', 'ProductReviewController@delete');
+
+        /**
          * Product orders
          */
         Route::get('/product-orders', 'ProductOrderController@index');
+        Route::post('/product-orders', 'ProductOrderController@store');
         Route::get('/product-orders/{id}', 'ProductOrderController@show');
+        Route::put('/product-orders/{id}', 'ProductOrderController@update');
+        Route::delete('/product-orders/{id}', 'ProductOrderController@delete');
 
         /**
          * Product order payments
@@ -286,5 +301,21 @@ Route::middleware(['auth'])->group(function() {
         Route::post('/discount-codes', 'DiscountCodeController@store');
         Route::put('/discount-codes/{id}', 'DiscountCodeController@update');
         Route::delete('/discount-codes/{id}', 'DiscountCodeController@delete');
+
+        /**
+         * Seller accounts
+         */
+        Route::get('/sellers', 'SellerAccountController@index');
+        Route::post('/sellers', 'SellerAccountController@store');
+        Route::get('/sellers/{id}', 'SellerAccountController@show');
+        Route::put('/sellers/{id}', 'SellerAccountController@update');
+        Route::delete('/sellers/{id}', 'SellerAccountController@delete');
+
+        /**
+         * Seller account withdraws
+         */
+        Route::get('/sellers/{id}/withdraws', 'SellerAccountWithdrawController@index');
+        Route::post('/sellers/{id}/withdraws', 'SellerAccountWithdrawController@store');
+        Route::put('/sellers/{sellerId}/withdraws/{id}', 'SellerAccountWithdrawController@update');
     });
 });

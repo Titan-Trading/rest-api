@@ -35,6 +35,7 @@ class CreateOrdersTable extends Migration
             $table->timestamp('fill_started_at')->nullable(); // when was the order beginning to be filled
             $table->timestamp('fill_completed_at')->nullable(); // when was the order completely filled
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -47,6 +48,7 @@ class CreateOrdersTable extends Migration
             $table->decimal('price', 18, 8); // price of the fill
             $table->timestamp('filled_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

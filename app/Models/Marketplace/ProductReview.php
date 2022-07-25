@@ -6,38 +6,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class ProductReview extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'products';
+    protected $table = 'product_reviews';
 
     protected $fillable = [
-        'seller_id',
+        'reviewer_id',
         'sellable_type',
         'sellable_id',
         'featured_image_id',
+        'rating',
         'is_featured',
         'status',
-        'name',
-        'description',
-        'rating',
-        'quantity',
-        'sold'
+        'reviewer_name',
+        'title',
+        'text'
     ];
 
     /**
-     * User that created and is selling the product
+     * User that left the review
      *
      * @return void
      */
-    public function seller()
+    public function reviewer()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(User::class, 'reviewer_id');
     }
 
     /**
-     * The sellable item being sold
+     * The sellable item the review is for
      *
      * @return void
      */
@@ -47,7 +46,7 @@ class Product extends Model
     }
 
     /**
-     * The main/featured image of the product
+     * The main/featured image of the review
      *
      * @return void
      */

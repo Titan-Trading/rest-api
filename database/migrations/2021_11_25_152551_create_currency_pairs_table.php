@@ -54,6 +54,7 @@ class CreateCurrencyPairsTable extends Migration
             $table->foreignId('exchange_id');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -65,6 +66,7 @@ class CreateCurrencyPairsTable extends Migration
             $table->string('key');
             $table->string('value');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
