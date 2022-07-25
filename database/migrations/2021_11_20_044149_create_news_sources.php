@@ -38,7 +38,7 @@ class CreateNewsSources extends Migration
         Schema::create('sources', function (Blueprint $table) {
             $table->id();
             $table->foreignId('logo_id')->nullable();
-            $table->foreignId('main_feed_id');
+            $table->foreignId('main_feed_id')->nullable();
             $table->string('name')->unique();
             $table->text('description')->nullable();
             $table->string('website_url');
@@ -67,9 +67,9 @@ class CreateNewsSources extends Migration
             $table->foreignId('author_id');
             $table->string('url');
             $table->string('title');
-            $table->text('excerpt');
+            $table->text('excerpt')->nullable();
             $table->longText('content_html');
-            $table->longText('content_text');
+            $table->longText('content_text')->nullable();
             $table->timestamp('published_at');
             $table->timestamps();
         });

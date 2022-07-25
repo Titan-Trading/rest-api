@@ -27,7 +27,7 @@ class RoleController extends Controller
      * @param Request $request
      * @return void
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $this->validate($request, [
             'name' => 'required|unique:roles,name'
@@ -38,7 +38,7 @@ class RoleController extends Controller
 
         $role = new Role();
         $role->name = $request->name;
-        $role->description = isset($request->description) ? $request->description : null;
+        $role->description = $request->description ? $request->description : null;
         $role->save();
 
         return response()->json($role, 201);
@@ -91,7 +91,7 @@ class RoleController extends Controller
         ]);
 
         $role->name = $request->name;
-        $role->description = isset($request->description) ? $request->description : $role->description;
+        $role->description = $request->description ? $request->description : $role->description;
         $role->save();
 
         return response()->json($role);

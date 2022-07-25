@@ -3,26 +3,26 @@
 namespace App\Http\Controllers\News;
 
 use App\Http\Controllers\Controller;
-use App\Models\News\Author;
+use App\Models\News\Feed;
 use Illuminate\Http\Request;
 
-class AuthorController extends Controller
+class FeedController extends Controller
 {
     /**
-     * Get list of news authors
+     * Get list of news feeds
      *
      * @param Request $request
      * @return void
      */
     public function index(Request $request)
     {
-        $authors = Author::query()->get();
+        $feeds = Feed::query()->get();
 
-        return response()->json($authors);
+        return response()->json($feeds);
     }
 
     /**
-     * Create an news author
+     * Create a news feed
      *
      * @param Request $request
      * @return void
@@ -31,7 +31,7 @@ class AuthorController extends Controller
     {
         $this->validate($request, [
             'source_id' => ['required', 'exists:sources,id'],
-            'name' => ['required', 'unique:authors,name']
+            'name' => ['required', 'unique:feeds,name']
         ], [
             'source_id_required' => 'Source id is required',
             'source_id_exists' => 'Source id must exist',
@@ -39,16 +39,17 @@ class AuthorController extends Controller
             'name_unique' => 'Name must be unique'
         ]);
 
-        $author = new Author();
-        $author->source_id = $request->source_id;
-        $author->name = $request->name;
-        $author->save();
+        $feed = new Feed();
+        $feed->source_id = $request->source_id;
+        $feed->name = $request->name;
+        $feed->url = $request->url ? $request->url : null;
+        $feed->save();
 
-        return response()->json($author, 201);
+        return response()->json($feed, 201);
     }
 
     /**
-     * Get a new author by id
+     * Get a news feed by id
      *
      * @param Request $request
      * @param integer $id
@@ -56,18 +57,18 @@ class AuthorController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $author = Author::find($id);
-        if(!$author) {
+        $feed = Feed::find($id);
+        if(!$feed) {
             return response()->json([
                 'message' => 'Not found'
             ], 404);
         }
 
-        return response()->json($author);
+        return response()->json($feed);
     }
 
     /**
-     * Update a news author by id
+     * Update a news feed by id
      *
      * @param Request $request
      * @param integer $id
@@ -75,17 +76,17 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $author = Author::find($id);
-        if(!$author) {
+        $feed = Feed::find($id);
+        if(!$feed) {
             return response()->json([
                 'message' => 'Not found'
             ], 404);
         }
 
         $nameRules = ['required'];
-        if($author->name != $request->name)
+        if($feed->name != $request->name)
         {
-            $nameRules[] = 'unique:authors,name';
+            $nameRules[] = 'unique:feeds,name';
         }
 
         $this->validate($request, [
@@ -98,15 +99,16 @@ class AuthorController extends Controller
             'name_unique' => 'Name must be unique'
         ]);
 
-        $author->source_id = $request->source_id;
-        $author->name = $request->name;
-        $author->save();
+        $feed->source_id = $request->source_id;
+        $feed->name = $request->name;
+        $feed->url = $request->url ? $request->url : $feed->url;
+        $feed->save();
 
-        return response()->json($author);
+        return response()->json($feed);
     }
 
     /**
-     * Delete a news author by id
+     * Delete a news feed by id
      *
      * @param Request $request
      * @param integer $id
@@ -114,15 +116,15 @@ class AuthorController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        $author = Author::find($id);
-        if(!$author) {
+        $feed = Feed::find($id);
+        if(!$feed) {
             return response()->json([
                 'message' => 'Not found'
             ], 404);
         }
 
-        $author->delete();
+        $feed->delete();
 
-        return response()->json($author);
+        return response()->json($feed);
     }
 }

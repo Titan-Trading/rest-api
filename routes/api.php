@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function() {
      * Roles (create, update, index, view, assign permissions)
      */
     Route::get('/roles', 'App\Http\Controllers\RoleController@index');
-    Route::post('/roles', 'App\Http\Controllers\RoleController@create');
+    Route::post('/roles', 'App\Http\Controllers\RoleController@store');
     Route::get('/roles/{id}', 'App\Http\Controllers\RoleController@show');
     Route::put('/roles/{id}', 'App\Http\Controllers\RoleController@update');
     Route::delete('/roles/{id}', 'App\Http\Controllers\RoleController@delete');
@@ -76,26 +76,11 @@ Route::middleware(['auth'])->group(function() {
     /**
      * Event sourcing (resource, resource id, resource data before and after)
      */
-    Route::get('/events', 'App\Http\Controllers\EventSourceController@index');
-    Route::post('/events', 'App\Http\Controllers\EventSourceController@store');
-    Route::get('/events/{id}', 'App\Http\Controllers\EventSourceController@show');
-    Route::put('/events/{id}', 'App\Http\Controllers\EventSourceController@update');
-    Route::delete('/events/{id}', 'App\Http\Controllers\EventSourceController@delete');
-
-    /**
-     * Bots and bot sessions (algorithm script, inputs, bot, exchange, back-test settings, etc.)
-     */
-    Route::get('/bots', 'App\Http\Controllers\Trading\BotController@index');
-    Route::post('/bots', 'App\Http\Controllers\Trading\BotController@store');
-    Route::get('/bots/sessions', 'App\Http\Controllers\Trading\BotSessionController@allActive');
-    Route::get('/bots/{id}', 'App\Http\Controllers\Trading\BotController@show');
-    Route::put('/bots/{id}', 'App\Http\Controllers\Trading\BotController@update');
-    Route::delete('/bots/{id}', 'App\Http\Controllers\Trading\BotController@delete');
-    Route::get('/bots/{botId}/sessions', 'App\Http\Controllers\Trading\BotSessionController@index');
-    Route::post('/bots/{botId}/sessions', 'App\Http\Controllers\Trading\BotSessionController@store');
-    Route::get('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@show');
-    Route::put('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@update');
-    Route::delete('/bots/{botId}/sessions/{id}', 'App\Http\Controllers\Trading\BotSessionController@delete');
+    // Route::get('/events', 'App\Http\Controllers\EventSourceController@index');
+    // Route::post('/events', 'App\Http\Controllers\EventSourceController@store');
+    // Route::get('/events/{id}', 'App\Http\Controllers\EventSourceController@show');
+    // Route::put('/events/{id}', 'App\Http\Controllers\EventSourceController@update');
+    // Route::delete('/events/{id}', 'App\Http\Controllers\EventSourceController@delete');
 
     /**
      * Trading api routes
@@ -128,11 +113,11 @@ Route::middleware(['auth'])->group(function() {
         /**
          * Market indicators (CRUD, algorithm script)
          */
-        Route::get('/indicators', 'MarketIndicatorController@index');
-        Route::post('/indicators', 'MarketIndicatorController@store');
-        Route::get('/indicators/{id}', 'MarketIndicatorController@show');
-        Route::put('/indicators/{id}', 'MarketIndicatorController@update');
-        Route::delete('/indicators/{id}', 'MarketIndicatorController@delete');
+        Route::get('/indicators', 'IndicatorController@index');
+        Route::post('/indicators', 'IndicatorController@store');
+        Route::get('/indicators/{id}', 'IndicatorController@show');
+        Route::put('/indicators/{id}', 'IndicatorController@update');
+        Route::delete('/indicators/{id}', 'IndicatorController@delete');
 
         /**
          * Market types (CRUD)
@@ -278,7 +263,7 @@ Route::middleware(['auth'])->group(function() {
          * Products
          */
         Route::get('/products', 'ProductController@index');
-        Route::post('/products', 'ProductController@create');
+        Route::post('/products', 'ProductController@store');
         Route::get('/products/{id}', 'ProductController@show');
         Route::put('/products/{id}', 'ProductController@update');
         Route::delete('/products/{id}', 'ProductController@delete');
@@ -298,7 +283,7 @@ Route::middleware(['auth'])->group(function() {
          * Discount codes
          */
         Route::get('/discount-codes', 'DiscountCodeController@index');
-        Route::post('/discount-codes', 'DiscountCodeController@create');
+        Route::post('/discount-codes', 'DiscountCodeController@store');
         Route::put('/discount-codes/{id}', 'DiscountCodeController@update');
         Route::delete('/discount-codes/{id}', 'DiscountCodeController@delete');
     });
