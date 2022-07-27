@@ -7,11 +7,19 @@ use App\Models\Trading\Exchange;
 use App\Models\Trading\Symbol;
 use Illuminate\Http\Request;
 use App\Services\InfluxDB;
+use App\Services\MessageBus;
+use Illuminate\Support\Str;
 use Exception;
-use InfluxDB2\FluxTable;
 
 class ExchangeController extends Controller
 {
+    private $messageBus;
+    
+    public function __construct(MessageBus $messageBus)
+    {
+        $this->messageBus = $messageBus;
+    }
+
     /**
      * Exchange list (system wide)
      */
@@ -57,6 +65,20 @@ class ExchangeController extends Controller
         $exchange->is_dex = $request->is_dex;
         $exchange->symbol_template = $request->symbol_template;
         $exchange->save();
+
+        /**
+         * Update exchange onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchanges', [
+            'topic' => 'exchanges',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'UPDATED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $exchange->toArray()
+        ]);
 
         return response()->json($exchange, 200);
     }
@@ -138,6 +160,20 @@ class ExchangeController extends Controller
 
         $exchange->symbols()->attach($symbol);
 
+        /**
+         * Add symbol to exchange onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchanges', [
+            'topic' => 'exchanges',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'SYMBOL_ADDED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $exchange->toArray()
+        ]);
+
         return response()->json([], 200);
     }
 
@@ -182,6 +218,20 @@ class ExchangeController extends Controller
         }
 
         $exchange->symbols()->detach($symbol);
+
+        /**
+         * Add symbol to exchange onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchanges', [
+            'topic' => 'exchanges',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'SYMBOL_REMOVED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $exchange->toArray()
+        ]);
 
         return response()->json([], 200);
     }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AccessToken;
 use App\Models\User;
 use Closure;
 use Exception;
@@ -10,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Ahc\Jwt\JWT;
 use App\Models\ApiKey;
+use Carbon\Carbon;
 
 class Authenticated
 {
@@ -23,10 +23,10 @@ class Authenticated
     public function handle(Request $request, Closure $next)
     {
         // check for custom auth headers
-        $accessTokenHeader = $request->header('X-Auth-Token');
-        $apiKeyHeader      = $request->header('ST-Api-Key');
+        $accessTokenHeader = $request->header('x-auth-token');
+        $apiKeyHeader      = $request->header('st-api-key');
 
-        if ($accessTokenHeader) {
+        if (!empty($accessTokenHeader)) {
             try {
                 $jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 5 mins
 
@@ -50,11 +50,14 @@ class Authenticated
                 });
             }
             catch (Exception $ex) {
-                Log::info($ex->getMessage());
+                Log::info($ex);
                 return response('Unauthorized', 401);
             }
         }
-        else if($apiKeyHeader) {
+        else if(!empty($apiKeyHeader)) {
+            $timestamp = $request->header('st-api-timestamp');
+            $signature = $request->header('st-api-signature');
+
             // get api key from database
             $apiKeyRecord = ApiKey::where('key', $apiKeyHeader)->first();
 
@@ -70,6 +73,12 @@ class Authenticated
                 return response('Unauthorized', 401);
             }
 
+            // api key has expired
+            if ($apiKeyRecord->expiration >= Carbon::now()->timestamp) {
+                Log::info('api key expired');
+                return response('Unauthorized', 401);
+            }
+
             // find user for api key
             $user = User::find($apiKeyRecord->user_id);
             if (!$user) {
@@ -77,7 +86,26 @@ class Authenticated
                 return response('Unauthorized', 401);
             }
 
-            // verify request signature (base 64 encoded timestamp+method+endpoint+body with sha256)
+            // get request body content
+            $bodyContent = (!empty($request->getContent()) && $request->getContent() != '{}') ? $request->getContent() : '';
+
+            // timestamp + method + endpoint + body
+            $toEncode = $timestamp . strtolower($request->method()) . $request->getPathInfo() . $bodyContent;
+            $hashed = base64_encode(hash_hmac('sha512', $toEncode, $apiKeyRecord->secret, true));
+
+            Log::info([$hashed, $signature]);
+
+            Log::info('to encode: ' . $toEncode);
+            Log::info('hashed: ' . $hashed);
+            Log::info('signature: ' . $signature);
+            Log::info('key: ' . $apiKeyRecord->key);
+            Log::info('secret: ' . $apiKeyRecord->secret);
+
+            // check generated signature against signature sent
+            if ($hashed !== $signature) {
+                Log::info('Signature does not match');
+                return response('Unauthorized', 401);
+            }
 
             // bind user to request
             $request->merge(['user' => $user]);

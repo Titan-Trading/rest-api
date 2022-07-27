@@ -6,9 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Trading\ConnectedExchange;
 use App\Services\MessageBus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ConnectedExchangeController extends Controller
 {
+    private $messageBus;
+    
+    public function __construct(MessageBus $messageBus)
+    {
+        $this->messageBus = $messageBus;
+    }
+
     /**
      * Exchange accounts list
      *
@@ -67,6 +75,20 @@ class ConnectedExchangeController extends Controller
         $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : null;
         $connectedExchange->save();
 
+        /**
+         * Add new exchange account onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchange-accounts', [
+            'topic' => 'exchange-accounts',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'CREATED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $connectedExchange->toArray()
+        ]);
+
         return response()->json($connectedExchange, 201);
     }
 
@@ -117,6 +139,20 @@ class ConnectedExchangeController extends Controller
         $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $connectedExchange->wallet_private_key;
         $connectedExchange->save();
 
+        /**
+         * Update exchange account onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchange-accounts', [
+            'topic' => 'exchange-accounts',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'UPDATED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $connectedExchange->toArray()
+        ]);
+
         return response()->json($connectedExchange, 200);
     }
 
@@ -143,6 +179,20 @@ class ConnectedExchangeController extends Controller
         }
 
         $connectedExchange->delete();
+
+        /**
+         * Delete exchange account onto message bus
+         */
+
+        $this->messageBus->sendMessage('exchange-accounts', [
+            'topic' => 'exchange-accounts',
+            'messageType' => 'EVENT',
+            'messageId' => Str::uuid()->toString(),
+            'eventId' => 'DELETED',
+            'serviceId' => 'simple-trader-api',
+            'instanceId' => env('INSTANCE_ID'),
+            'data' => $connectedExchange->toArray()
+        ]);
 
         return response('Success', 200);
     }
