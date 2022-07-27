@@ -35,12 +35,16 @@ class Authenticated
 
                 // no metadata or user id
                 if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
-                    return response('Unauthorized', 401);
+                    return response()->json([
+                        'message' => 'Unauthorized'
+                    ], 401);
                 }
 
                 $user = User::find($jwtData['metadata']->user_id);
                 if (!$user) {
-                    return response('Unauthorized', 401);
+                    return response()->json([
+                        'message' => 'Unauthorized'
+                    ], 401);
                 }
 
                 // bind user to request
@@ -51,7 +55,9 @@ class Authenticated
             }
             catch (Exception $ex) {
                 Log::info($ex);
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
         }
         else if(!empty($apiKeyHeader)) {
@@ -64,26 +70,34 @@ class Authenticated
             // no record found
             if (!$apiKeyRecord) {
                 Log::info('No api key record found');
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // api key was revoked
             if ($apiKeyRecord->revoked) {
                 Log::info('api key revoked');
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // api key has expired
             if ($apiKeyRecord->expiration >= Carbon::now()->timestamp) {
                 Log::info('api key expired');
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // find user for api key
             $user = User::find($apiKeyRecord->user_id);
             if (!$user) {
                 Log::info('No user found');
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // get request body content
@@ -104,7 +118,9 @@ class Authenticated
             // check generated signature against signature sent
             if ($hashed !== $signature) {
                 Log::info('Signature does not match');
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // bind user to request
@@ -115,7 +131,9 @@ class Authenticated
         }
         else {
             Log::info('No access token or api key found');
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         return $next($request);

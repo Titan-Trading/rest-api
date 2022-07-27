@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Trading;
+namespace App\Http\Controllers\Admin\Trading;
 
 use App\Http\Controllers\Controller;
 use App\Models\Trading\Symbol;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SymbolController extends Controller
 {
@@ -34,7 +33,7 @@ class SymbolController extends Controller
 
         $symbols = $query->get();
 
-        return response()->json($symbols, 200);
+        return response()->json($symbols);
     }
 
     /**
@@ -69,12 +68,6 @@ class SymbolController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Symbol id is required'
-            ], 404);
-        }
-
         $symbol = Symbol::whereId($id)->with(['exchanges' => function($q) {
             $q->select('exchanges.id', 'name');
         }])->first();
@@ -84,7 +77,7 @@ class SymbolController extends Controller
             ], 404);
         }
 
-        return response()->json($symbol, 200);
+        return response()->json($symbol);
     }
 
     /**
@@ -92,12 +85,6 @@ class SymbolController extends Controller
      */
     public function update(Request $request, $id) 
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Symbol id is required'
-            ], 404);
-        }
-
         $symbol = Symbol::find($id);
         if(!$symbol) {
             return response()->json([
@@ -123,7 +110,7 @@ class SymbolController extends Controller
         $symbol->target_currency_id = $request->target_currency_id;
         $symbol->save();
 
-        return response()->json($symbol, 200);
+        return response()->json($symbol);
     }
 
     /**
@@ -131,12 +118,6 @@ class SymbolController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Symbol id is required'
-            ], 404);
-        }
-
         $symbol = Symbol::find($id);
         if(!$symbol) {
             return response()->json([
@@ -146,8 +127,6 @@ class SymbolController extends Controller
 
         $symbol->delete();
 
-        return response()->json([
-            'message' => 'Symbol deleted successfully'
-        ], 200);
+        return response()->json($symbol);
     }
 }

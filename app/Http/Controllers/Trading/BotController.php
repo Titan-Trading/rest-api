@@ -8,16 +8,26 @@ use Illuminate\Http\Request;
 class BotController extends Controller
 {
     /**
-     * Get list of bots
+     * Get list of bots that either a user has created or has purchased
      *
      * @param Request $request
      * @return void
      */
     public function index(Request $request)
     {
-        $bots = Bot::query()->get();
+        $query = Bot::query()
+            ->whereUserId($request->user()->id);
 
-        return response()->json($bots, 200);
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+
+        // search by bot name
+        if($request->has('search_text')) {
+            $query->whereName('like', '%' . $request->search_text . '%');
+        }
+
+        $bots = $query->get();
+
+        return response()->json($bots);
     }
 
     /**
@@ -57,20 +67,22 @@ class BotController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($id);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        return response()->json($bot, 200);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        return response()->json($bot);
     }
 
     /**
@@ -82,17 +94,18 @@ class BotController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($id);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot not found'
+                'message' => 'Not found'
             ], 404);
+        }
+
+        // check if bot can be access by current user
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to make changes to this bot'
+            ], 403);
         }
 
         $this->validate($request, [
@@ -110,7 +123,7 @@ class BotController extends Controller
         $bot->parameter_options = $request->parameter_options;
         $bot->save();
 
-        return response()->json($bot, 200);
+        return response()->json($bot);
     }
 
     /**
@@ -122,21 +135,24 @@ class BotController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($id);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot not found'
+                'message' => 'Not found'
             ], 404);
         }
 
+        // check if bot can be access by current user
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to remove this bot'
+            ], 403);
+        }
+
+        // TODO: check if there are any bot sessions for this bot
+
         $bot->delete();
 
-        return response('Success', 200);
+        return response()->json($bot);
     }
 }

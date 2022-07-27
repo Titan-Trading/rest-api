@@ -16,7 +16,7 @@ class PaymentMethodController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PaymentMethod::query();
+        $query = PaymentMethod::whereUserId($request->user()->id);
 
         $paymentMethods = $query->get();
 
@@ -88,6 +88,6 @@ class PaymentMethodController extends Controller
 
         $payment->delete();
 
-        return response()->json($payment, 200);
+        return response()->json($payment);
     }
 }

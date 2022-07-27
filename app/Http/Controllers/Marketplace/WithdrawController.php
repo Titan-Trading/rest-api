@@ -20,10 +20,17 @@ class SellerAccountWithdrawController extends Controller
     {
         $query = Withdraw::query();
 
+        // only show withdraws from seller accounts that are owned by current user
+        $currentUserId = $request->user()->id;
+        $query->whereHas('seller', function($q) use ($currentUserId) {
+            $q->whereOwnerId($currentUserId);
+        });
+
         // search withdraws from a given seller account
         if($request->has('seller_id') && $request->seller_id) {
             $query->whereSellerId($request->seller_id);
         }
+
 
         $withdraws = $query->get();
 
@@ -73,6 +80,8 @@ class SellerAccountWithdrawController extends Controller
                 'message' => 'Insufficient balance to perform the withdraw'
             ], 403);
         }
+
+        // TODO: calculate commission, taxes and payout amount
 
         $withdraw = new Withdraw();
         $withdraw->seller_id = $request->seller_id;

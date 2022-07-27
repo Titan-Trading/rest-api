@@ -21,7 +21,7 @@ class OrderController extends Controller
             'connectedExchange.exchange'
         ])->get();
 
-        return response()->json($orders, 200);
+        return response()->json($orders);
     }
 
     /**
@@ -93,12 +93,6 @@ class OrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Order id is required'
-            ], 404);
-        }
-
         $order = Order::find($id);
         if(!$order) {
             return response()->json([
@@ -106,7 +100,7 @@ class OrderController extends Controller
             ], 404);
         }
 
-        return response()->json($order, 200);
+        return response()->json($order);
     }
 
     /**
@@ -118,12 +112,6 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Order id is required'
-            ], 404);
-        }
-
         $order = Order::find($id);
         if(!$order) {
             return response()->json([
@@ -178,7 +166,7 @@ class OrderController extends Controller
         $order->fill_completed_at = $request->has('fill_completed_at') ? $request->fill_completed_at : null;
         $order->save();
 
-        return response()->json($order, 200);
+        return response()->json($order);
     }
 
     /**
@@ -190,12 +178,6 @@ class OrderController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Order id is required'
-            ], 404);
-        }
-
         $order = Order::find($id);
         if(!$order) {
             return response()->json([
@@ -205,7 +187,7 @@ class OrderController extends Controller
 
         $order->delete();
 
-        return response('Success', 200);
+        return response()->json($order);
     }
 
     /**
@@ -232,7 +214,7 @@ class OrderController extends Controller
 
         $fills = OrderFill::whereOrderId($id)->get();
 
-        return response()->json($fills, 200);
+        return response()->json($fills);
     }
 
     /**
@@ -309,6 +291,6 @@ class OrderController extends Controller
 
         $fill->delete();
 
-        return response('Success', 200);
+        return response()->json($fill);
     }
 }

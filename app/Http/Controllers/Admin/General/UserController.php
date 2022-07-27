@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\General;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,7 @@ class UserController extends Controller
     {
         $users = User::query()->get();
 
-        return response()->json($users, 200);
+        return response()->json($users);
     }
 
     /**
@@ -65,12 +66,6 @@ class UserController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'User id is required'
-            ], 404);
-        }
-
         $user = User::find($id);
         if(!$user) {
             return response()->json([
@@ -78,7 +73,7 @@ class UserController extends Controller
             ], 404);
         }
 
-        return response()->json($user, 200);
+        return response()->json($user);
     }
 
     /**
@@ -90,12 +85,6 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'User id is required'
-            ], 404);
-        }
-
         $user = User::find($id);
         if(!$user) {
             return response()->json([
@@ -133,7 +122,7 @@ class UserController extends Controller
         $user->default_payment_method_id = $request->default_payment_method_id ? $request->default_payment_method_id : null;
         $user->save();
 
-        return response()->json($user, 200);
+        return response()->json($user);
     }
 
     /**
@@ -145,12 +134,6 @@ class UserController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'User id is required'
-            ], 404);
-        }
-
         $user = User::find($id);
         if(!$user) {
             return response()->json([
@@ -160,6 +143,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response('Success', 200);
+        return response()->json($user);
     }
 }

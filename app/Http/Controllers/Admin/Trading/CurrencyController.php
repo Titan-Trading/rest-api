@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Trading;
+namespace App\Http\Controllers\Admin\Trading;
 
 use App\Http\Controllers\Controller;
 use App\Models\Trading\Currency;
@@ -17,7 +17,7 @@ class CurrencyController extends Controller
             $q->select('currency_types.id', 'name');
         }])->get();
 
-        return response()->json($currencies, 200);
+        return response()->json($currencies);
     }
     
     /**
@@ -26,8 +26,8 @@ class CurrencyController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'type_id' => 'required|integer|exists:currency_types,id',
-            'name' => 'required|string|unique:currencies,name,NULL,id,deleted_at,NULL',
+            'type_id' => ['required', 'integer', 'exists:currency_types,id'],
+            'name' => ['required', 'string', 'unique:currencies,name,NULL,id,deleted_at,NULL'],
         ]);
 
         // if record found and soft deleted, then restore
@@ -51,23 +51,15 @@ class CurrencyController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Currency id is required'
-            ], 404);
-        }
-
         $currency = Currency::find($id);
         if(!$currency) {
             return response()->json([
-                'message' => 'Currency not found'
+                'message' => 'Not found'
             ], 404);
         }
 
         $currency->delete();
 
-        return response()->json([
-            'message' => 'Currency deleted successfully'
-        ], 200);
+        return response()->json($currency);
     }
 }

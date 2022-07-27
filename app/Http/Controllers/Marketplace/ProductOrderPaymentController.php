@@ -20,6 +20,9 @@ class ProductOrderPaymentController extends Controller
     {
         $query = ProductOrderPayment::query();
 
+        // TODO: show only order payments with a product that was created by the current user
+        // or purchased by (active order, no failed payments) the current user
+
         $orderPayments = $query->get();
 
         return response()->json($orderPayments);
@@ -61,7 +64,7 @@ class ProductOrderPaymentController extends Controller
         $orderPayment->order_id = $request->order_id;
         $orderPayment->buyer_id = $request->user()->id;
         $orderPayment->payment_method_id = $request->payment_method_id;
-        $orderPayment->status = 'completed';
+        $orderPayment->status = 'pending';
         $orderPayment->commission_amount = 0.00;
         $orderPayment->tax_amount = 0.00;
         $orderPayment->paid_amount = 0.00;
