@@ -33,7 +33,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'connected_exchange_id' => 'required|exists:connected_exchanges,id',
+            'exchange_account_id' => 'required|exists:exchange_accounts,id',
             'tradeable_id' => 'required',
             'tradeable_type' => 'required',
             'order_id' => 'required',
@@ -46,8 +46,8 @@ class OrderController extends Controller
             'base_symbol' => 'required',
             'target_symbol' => 'required'
         ], [
-            'connected_exchange_id_required' => 'Connected exchange id is required',
-            'connected_exchange_id_exists' => 'Connected exchange is not found',
+            'exchange_account_id_required' => 'Connected exchange id is required',
+            'exchange_account_id_exists' => 'Connected exchange is not found',
             'tradeable_id_required' => 'Tradeable id is required',
             'tradeable_type_required' => 'Tradeable type is required',
             'order_id_required' => 'Order id is required',
@@ -63,7 +63,7 @@ class OrderController extends Controller
 
         $order = new Order();
         $order->user_id = $request->user()->id;
-        $order->connected_exchange_id = $request->connected_exchange_id;
+        $order->exchange_account_id = $request->exchange_account_id;
         $order->tradeable_id = $request->tradeable_id;
         $order->tradeable_type = $request->tradeable_type;
         $order->order_id = $request->order_id;
@@ -132,7 +132,7 @@ class OrderController extends Controller
         }
 
         $this->validate($request, [
-            'connected_exchange_id' => 'required|exists:connected_exchanges,id',
+            'exchange_account_id' => 'required|exists:exchange_accounts,id',
             'tradeable_id' => 'required',
             'tradeable_type' => 'required',
             'order_id' => 'required',
@@ -145,8 +145,8 @@ class OrderController extends Controller
             'base_symbol' => 'required',
             'target_symbol' => 'required'
         ], [
-            'connected_exchange_id_required' => 'Connected exchange id is required',
-            'connected_exchange_id_exists' => 'Connected exchange is not found',
+            'exchange_account_id_required' => 'Connected exchange id is required',
+            'exchange_account_id_exists' => 'Connected exchange is not found',
             'tradeable_id_required' => 'Tradeable id is required',
             'tradeable_type_required' => 'Tradeable type is required',
             'order_id_required' => 'Order id is required',
@@ -160,7 +160,7 @@ class OrderController extends Controller
             'target_symbol_required' => 'Target symbol is required'
         ]);
 
-        $order->connected_exchange_id = $request->connected_exchange_id;
+        $order->exchange_account_id = $request->exchange_account_id;
         $order->tradeable_id = $request->tradeable_id;
         $order->tradeable_type = $request->tradeable_type;
         $order->order_id = $request->order_id;

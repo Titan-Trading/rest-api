@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ConnectedExchange extends Model
+class ExchangeAccount extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'connected_exchanges';
+    protected $table = 'exchange_accounts';
 
     protected $fillable = [
         'user_id',

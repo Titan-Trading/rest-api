@@ -31,7 +31,7 @@ class CreateBotsTables extends Migration
         Schema::create('bot_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->foreignId('connected_exchange_id');
+            $table->foreignId('exchange_account_id');
             $table->foreignId('bot_id');
             $table->text('parameters');
             $table->string('mode');

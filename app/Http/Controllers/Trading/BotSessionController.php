@@ -80,15 +80,15 @@ class BotSessionController extends Controller
         }
 
         $this->validate($request, [
-            'connected_exchange_id' => 'required|exists:connected_exchanges,id',
+            'exchange_account_id' => 'required|exists:exchange_accounts,id',
             'bot_id' => 'required|exists:bots,id',
             'name' => 'required',
             'parameters' => 'required',
             'mode' => 'required',
             'active' => 'required'
         ], [
-            'connected_exchange_id_required' => 'Connected exchange id is required',
-            'connected_exchange_id_exists' => 'Connected exchange is not found',
+            'exchange_account_id_required' => 'Connected exchange id is required',
+            'exchange_account_id_exists' => 'Connected exchange is not found',
             'bot_id_required' => 'Bot id is required',
             'bot_id_exists' => 'Bot is not found',
             'name_required' => 'Name is required',
@@ -99,7 +99,7 @@ class BotSessionController extends Controller
 
         $session = new BotSession();
         $session->user_id = $request->user()->id;
-        $session->connected_exchange_id = $request->connected_exchange_id;
+        $session->exchange_account_id = $request->exchange_account_id;
         $session->bot_id = $request->bot_id;
         $session->name = $request->name;
         $session->parameters = $request->parameters;
@@ -201,15 +201,15 @@ class BotSessionController extends Controller
         }
 
         $this->validate($request, [
-            'connected_exchange_id' => 'required|exists:connected_exchanges,id',
+            'exchange_account_id' => 'required|exists:exchange_accounts,id',
             'bot_id' => 'required|exists:bots,id',
             'name' => 'required',
             'parameters' => 'required',
             'mode' => 'required',
             'active' => 'required'
         ], [
-            'connected_exchange_id_required' => 'Connected exchange id is required',
-            'connected_exchange_id_exists' => 'Connected exchange is not found',
+            'exchange_account_id_required' => 'Connected exchange id is required',
+            'exchange_account_id_exists' => 'Connected exchange is not found',
             'bot_id_required' => 'Bot id is required',
             'bot_id_exists' => 'Bot is not found',
             'name_required' => 'Name is required',
@@ -218,7 +218,7 @@ class BotSessionController extends Controller
             'active_required' => 'Active is required'
         ]);
 
-        $session->connected_exchange_id = $request->connected_exchange_id;
+        $session->exchange_account_id = $request->exchange_account_id;
         $session->bot_id = $request->bot_id;
         $session->name = $request->name;
         $session->parameters = $request->parameters;

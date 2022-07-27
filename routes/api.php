@@ -136,12 +136,12 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/exchanges/{id}/historical-data', 'ExchangeController@historicalData');
 
         /**
-         * Connected exchanges (details for using different exchanges to make trades)
+         * Exchange accounts (details for using different exchanges to make trades)
          */
-        Route::get('/connected-exchanges', 'ConnectedExchangeController@index');
-        Route::post('/connected-exchanges', 'ConnectedExchangeController@store');
-        Route::put('/connected-exchanges/{id}', 'ConnectedExchangeController@update');
-        Route::delete('/connected-exchanges/{id}', 'ConnectedExchangeController@delete');
+        Route::get('/exchange_accounts', 'ExchangeAccountController@index');
+        Route::post('/exchange_accounts', 'ExchangeAccountController@store');
+        Route::put('/exchange_accounts/{id}', 'ExchangeAccountController@update');
+        Route::delete('/exchange_accounts/{id}', 'ExchangeAccountController@delete');
 
         /**
          * Conditional trades (CRUD, conditions and condition operations)
@@ -190,6 +190,7 @@ Route::middleware(['auth'])->group(function() {
          */
         Route::get('/datasets', 'DatasetController@index');
         Route::post('/datasets', 'DatasetController@store');
+        Route::put('/datasets/{id}', 'DatasetController@update');
         Route::delete('/datasets/{id}', 'DatasetController@delete');
     });
 
@@ -321,17 +322,22 @@ Route::middleware(['auth'])->group(function() {
         /**
          * Seller account withdraw methods
          */
+        Route::get('/withdraw-methods', 'WithdrawMethodController@index');
+        Route::post('/withdraw-methods', 'WithdrawMethodController@store');
+        Route::delete('/withdraw-methods/{id}', 'WithdrawMethodController@delete');
 
         /**
          * Seller account withdraws
          */
-        Route::get('/sellers/{id}/withdraws', 'WithdrawController@index');
-        Route::post('/sellers/{id}/withdraws', 'WithdrawController@store');
-        Route::put('/sellers/{sellerId}/withdraws/{id}', 'WithdrawController@delete');
+        Route::get('/withdraws', 'WithdrawController@index');
+        Route::post('/withdraws', 'WithdrawController@store');
+        Route::put('/withdraws/{id}', 'WithdrawController@delete');
 
         /**
          * User account payment methods
          */
-
+        Route::get('/payment-methods', 'PaymentMethodController@index');
+        Route::post('/payment-methods', 'PaymentMethodController@store');
+        Route::delete('/payment-methods/{id}', 'PaymentMethodController@delete');
     });
 });
