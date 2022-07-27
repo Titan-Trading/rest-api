@@ -21,6 +21,7 @@ class CreateApiKeysTable extends Migration
             $table->text('secret');
             $table->boolean('revoked')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

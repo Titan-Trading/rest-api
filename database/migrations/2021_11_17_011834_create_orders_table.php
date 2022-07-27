@@ -35,18 +35,20 @@ class CreateOrdersTable extends Migration
             $table->timestamp('fill_started_at')->nullable(); // when was the order beginning to be filled
             $table->timestamp('fill_completed_at')->nullable(); // when was the order completely filled
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Order fills that took place
          */
-        Schema::create('fills', function (Blueprint $table) {
+        Schema::create('order_fills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id'); // order that the fill took place on
             $table->decimal('quantity', 18, 8); // quantity of the fill
             $table->decimal('price', 18, 8); // price of the fill
             $table->timestamp('filled_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -57,7 +59,7 @@ class CreateOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fills');
+        Schema::dropIfExists('order_fills');
         Schema::dropIfExists('orders');
     }
 }

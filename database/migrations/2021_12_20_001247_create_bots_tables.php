@@ -22,6 +22,7 @@ class CreateBotsTables extends Migration
             $table->string('name');
             $table->longText('algorithm_text');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -37,6 +38,7 @@ class CreateBotsTables extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -57,6 +59,7 @@ class CreateBotsTables extends Migration
             $table->decimal('starting_balance');
             $table->decimal('ending_balance');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

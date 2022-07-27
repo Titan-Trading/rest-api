@@ -24,6 +24,12 @@ class UserSeeder extends Seeder
                 'email'              => 'admin@simpletrader.com',
                 'password'           => 'test123',
                 'profile_image_name' => 'test'
+            ],
+            [
+                'name'               => 'Exchange Listener',
+                'email'              => 'exchange.listener@simpletrader.com',
+                'password'           => 'test123',
+                'profile_image_name' => 'test'
             ]
         ];
 

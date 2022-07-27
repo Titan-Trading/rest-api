@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\MarketType;
+use App\Models\Trading\MarketType;
 use Illuminate\Http\Request;
 
 class MarketTypeController extends Controller

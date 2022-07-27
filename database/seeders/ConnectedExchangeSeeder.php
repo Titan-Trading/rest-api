@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ConnectedExchange;
-use App\Models\Exchange;
+use App\Models\Trading\ConnectedExchange;
+use App\Models\Trading\Exchange;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 

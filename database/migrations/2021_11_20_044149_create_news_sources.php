@@ -16,50 +16,54 @@ class CreateNewsSources extends Migration
         /**
          * Categories of news articles
          */
-        Schema::create('news_categories', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Authors of news articles
          */
-        Schema::create('news_authors', function (Blueprint $table) {
+        Schema::create('authors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('source_id');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Sources for news articles
          */
-        Schema::create('news_sources', function (Blueprint $table) {
+        Schema::create('sources', function (Blueprint $table) {
             $table->id();
             $table->foreignId('logo_id')->nullable();
-            $table->foreignId('main_feed_id');
+            $table->foreignId('main_feed_id')->nullable();
             $table->string('name')->unique();
             $table->text('description')->nullable();
             $table->string('website_url');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Feeds used to aggregate news articles
          */
-        Schema::create('news_feeds', function (Blueprint $table) {
+        Schema::create('feeds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('source_id');
             $table->string('name');
             $table->text('url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * News articles that were aggregated
          */
-        Schema::create('news_articles', function(Blueprint $table) {
+        Schema::create('articles', function(Blueprint $table) {
             $table->id();
             $table->foreignId('source_id');
             $table->foreignId('feed_id');
@@ -67,11 +71,12 @@ class CreateNewsSources extends Migration
             $table->foreignId('author_id');
             $table->string('url');
             $table->string('title');
-            $table->text('excerpt');
+            $table->text('excerpt')->nullable();
             $table->longText('content_html');
-            $table->longText('content_text');
+            $table->longText('content_text')->nullable();
             $table->timestamp('published_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -82,10 +87,10 @@ class CreateNewsSources extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('news_articles');
-        Schema::dropIfExists('news_feeds');
-        Schema::dropIfExists('news_sources');
-        Schema::dropIfExists('news_authors');
-        Schema::dropIfExists('news_categories');
+        Schema::dropIfExists('articles');
+        Schema::dropIfExists('feeds');
+        Schema::dropIfExists('sources');
+        Schema::dropIfExists('authors');
+        Schema::dropIfExists('categories');
     }
 }

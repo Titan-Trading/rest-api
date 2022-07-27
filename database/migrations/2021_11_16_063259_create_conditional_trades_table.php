@@ -28,27 +28,30 @@ class CreateConditionalTradesTable extends Migration
             $table->string('base_symbol'); // base symbol USD, BTC, ETH, etc.
             $table->string('target_symbol'); // target symbol, BTC, USD, LSK, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Market indicators (RSI, EMA) (ability to make new indicators)
          */
-        Schema::create('market_indicators', function (Blueprint $table) {
+        Schema::create('indicators', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // name of the indicator
             $table->boolean('is_active'); // is the indicator active and able to be used
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
          * Metadata attached to a market indicator (RSI or EMA20 operators)
          */
-        Schema::create('market_indicator_metadata', function (Blueprint $table) {
+        Schema::create('indicator_metadata', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('market_indicator_id'); // indicator metadata is attached to
+            $table->foreignId('indicator_id'); // indicator metadata is attached to
             $table->string('key'); // key to find the metadata
             $table->string('value'); // value of the metadata
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -57,10 +60,11 @@ class CreateConditionalTradesTable extends Migration
         Schema::create('trade_conditions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('conditional_trade_id'); // conditional trade that condition is applied to
-            $table->foreignId('market_indicator_id'); // RSI, EMA, etc
+            $table->foreignId('indicator_id'); // RSI, EMA, etc
             $table->foreignId('value_id'); // value record to compare to
             $table->string('comparative_operator'); // equal to, greater than, less than, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
 
         /**
@@ -70,6 +74,7 @@ class CreateConditionalTradesTable extends Migration
             $table->id();
             $table->string('value_type'); // type of value
             $table->string('value'); // value
+            $table->softDeletes();
         });
 
         /**
@@ -82,6 +87,7 @@ class CreateConditionalTradesTable extends Migration
             $table->integer('precedence')->default(1); // the precedence that the condition is applied
             $table->string('boolean_operator'); // AND, OR, etc.
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -95,8 +101,8 @@ class CreateConditionalTradesTable extends Migration
         Schema::dropIfExists('trade_condition_operators');
         Schema::dropIfExists('trade_condition_values');
         Schema::dropIfExists('trade_conditions');
-        Schema::dropIfExists('market_indicator_metadata');
-        Schema::dropIfExists('market_indicators');
+        Schema::dropIfExists('indicator_metadata');
+        Schema::dropIfExists('indicators');
         Schema::dropIfExists('conditional_trades');
     }
 }

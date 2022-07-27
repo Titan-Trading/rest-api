@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Currency;
-use App\Models\CurrencyType;
-use App\Models\Exchange;
-use App\Models\Symbol;
+use App\Models\Trading\Currency;
+use App\Models\Trading\CurrencyType;
+use App\Models\Trading\Exchange;
+use App\Models\Trading\Symbol;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 

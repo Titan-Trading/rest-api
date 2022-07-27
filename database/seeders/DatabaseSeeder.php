@@ -14,13 +14,25 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            // Trading
             ImageSeeder::class,
             UserSeeder::class,
+            ApiKeySeeder::class,
             ExchangeSeeder::class,
             CurrencyPairSeeder::class,
             ConnectedExchangeSeeder::class,
-            MarketIndicatorSeeder::class,
-            // NewsSourceSeeder::class,
+            IndicatorSeeder::class,
+
+            // News
+            // SourceSeeder::class,
+
+            // Marketplace
+            PaymentProcessorTypeSeeder::class,
+            PaymentProcessorSeeder::class,
+            ProductCategorySeeder::class,
+            ProductTypeSeeder::class,
+            ProductPriceTypeSeeder::class,
+            DiscountTypeSeeder::class
         ]);
     }
 }
