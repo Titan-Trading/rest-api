@@ -14,7 +14,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'connected_exchange_id',
+        'exchange_account_id',
         'order_id', // exchange order id
         'tradeable_id', // id of the record that initiated the trade
         'tradeable_type', // type of the record that initiated the trade
@@ -45,7 +45,7 @@ class Order extends Model
      */
     public function connectedExchange()
     {
-        return $this->belongsTo(ConnectedExchange::class);
+        return $this->belongsTo(ExchangeAccount::class);
     }
 
     /**

@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Trading\ConnectedExchange;
+use App\Models\Trading\ExchangeAccount;
 use App\Models\Trading\Exchange;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class ConnectedExchangeSeeder extends Seeder
+class ExchangeAccountSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -37,9 +37,9 @@ class ConnectedExchangeSeeder extends Seeder
                 continue;
             }
 
-            $connectedExchange = ConnectedExchange::whereApiKey($connectedExchangeData['api_key'])->first();
+            $connectedExchange = ExchangeAccount::whereApiKey($connectedExchangeData['api_key'])->first();
             if(!$connectedExchange) {
-                $connectedExchange = new ConnectedExchange();
+                $connectedExchange = new ExchangeAccount();
                 $connectedExchange->api_key = $connectedExchangeData['api_key'];
             }
 

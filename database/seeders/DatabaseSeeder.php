@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ApiKeySeeder::class,
             ExchangeSeeder::class,
             CurrencyPairSeeder::class,
-            ConnectedExchangeSeeder::class,
+            ExchangeAccountSeeder::class,
             IndicatorSeeder::class,
 
             // News

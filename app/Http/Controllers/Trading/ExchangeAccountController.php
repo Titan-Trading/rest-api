@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
-use App\Models\Trading\ConnectedExchange;
+use App\Models\Trading\ExchangeAccount;
 use App\Services\MessageBus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ConnectedExchangeController extends Controller
+class ExchangeAccountController extends Controller
 {
     private $messageBus;
     
@@ -25,7 +25,7 @@ class ConnectedExchangeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ConnectedExchange::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'wallet_private_key')
+        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'wallet_private_key')
             ->with([
                 // 'user' => function($q) {
                 //     $q->select('id', 'name', 'email');
@@ -67,7 +67,7 @@ class ConnectedExchangeController extends Controller
             'api_key_secret_required' => 'API key secret is required'
         ]);
 
-        $connectedExchange = new ConnectedExchange();
+        $connectedExchange = new ExchangeAccount();
         $connectedExchange->user_id = $request->user()->id;
         $connectedExchange->exchange_id = $request->exchange_id;
         $connectedExchange->api_key = $request->api_key ? $request->api_key : null;
@@ -103,19 +103,19 @@ class ConnectedExchangeController extends Controller
     {
         if(!$id) {
             return response()->json([
-                'message' => 'Connected exchange id is required'
+                'message' => 'Exchange account id is required'
             ], 404);
         }
 
-        $connectedExchange = ConnectedExchange::find($id);
+        $connectedExchange = ExchangeAccount::find($id);
         if(!$connectedExchange) {
             return response()->json([
-                'message' => 'Connected exchange not found'
+                'message' => 'Exchange account not found'
             ], 404);
         }
 
         $rules = [
-            'exchange_id' => 'required|exists:connected_exchanges,id'
+            'exchange_id' => 'required|exists:exchange_accounts,id'
         ];
         if($request->wallet_secret_key) {
             $rules['wallet_private_key'] = 'required';
@@ -171,7 +171,7 @@ class ConnectedExchangeController extends Controller
             ], 404);
         }
 
-        $connectedExchange = ConnectedExchange::find($id);
+        $connectedExchange = ExchangeAccount::find($id);
         if(!$connectedExchange) {
             return response()->json([
                 'message' => 'Connected exchange not found'

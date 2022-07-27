@@ -19,7 +19,7 @@ class CreateConditionalTradesTable extends Migration
         Schema::create('conditional_trades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id'); // user trade is created by
-            $table->foreignId('connected_exchange_id'); // exchange and api key to use for the trade
+            $table->foreignId('exchange_account_id'); // exchange and api key to use for the trade
             $table->foreignId('parent_conditional_trade_id')->nullable(); // only apply trade once parent trade has completed
             $table->boolean('is_test')->default(false); // is test order or not
             $table->boolean('is_active')->default(false); // is active or not

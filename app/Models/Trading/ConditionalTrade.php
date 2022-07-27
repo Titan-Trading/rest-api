@@ -14,7 +14,7 @@ class ConditionalTrade extends Model
 
     protected $fillable = [
         'user_id',
-        'connected_exchange_id',
+        'exchange_account_id',
         'parent_conditional_trade_id',
         'is_test',
         'is_active',
@@ -37,7 +37,7 @@ class ConditionalTrade extends Model
      */
     public function connectedExchange()
     {
-        return $this->belongsTo(ConnectedExchange::class);
+        return $this->belongsTo(ExchangeAccount::class);
     }
 
     /**

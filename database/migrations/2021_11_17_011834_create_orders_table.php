@@ -19,7 +19,7 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id'); // user making the order
-            $table->foreignId('connected_exchange_id'); // api key and exchange to use for the order
+            $table->foreignId('exchange_account_id'); // api key and exchange to use for the order
             $table->string('order_id'); // order id on the exchange
             $table->morphs('tradeable'); // was the order created by a conditional trade or a trade algorithm
             $table->string('status'); // status of the order

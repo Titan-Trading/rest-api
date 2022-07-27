@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateConnectedExchangesTable extends Migration
+class CreateExchangeAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class CreateConnectedExchangesTable extends Migration
         /**
          * Exchange accounts (connections for a given user to a given exchange)
          */
-        Schema::create('connected_exchanges', function (Blueprint $table) {
+        Schema::create('exchange_accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('exchange_id');
@@ -35,6 +35,6 @@ class CreateConnectedExchangesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('connected_exchanges');
+        Schema::dropIfExists('exchange_accounts');
     }
 }
