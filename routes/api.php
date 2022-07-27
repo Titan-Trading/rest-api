@@ -87,7 +87,7 @@ Route::middleware(['auth'])->group(function() {
      */
     Route::group([
         'prefix' => 'trading',
-        'namespace' => 'Trading'
+        'namespace' => 'App\Http\Controllers\Trading'
     ], function () {
         /**
          * Currency types (CRUD)
@@ -156,6 +156,7 @@ Route::middleware(['auth'])->group(function() {
          * Bots (algorithm script, inputs, exchange, back-test settings, etc.)
          */
         Route::get('/bots', 'BotController@index');
+        Route::get('/bots/sessions', 'BotSessionController@allActive');
         Route::post('/bots', 'BotController@store');
         Route::get('/bots/{id}', 'BotController@show');
         Route::put('/bots/{id}', 'BotController@update');
@@ -164,7 +165,6 @@ Route::middleware(['auth'])->group(function() {
         /**
          * Bot sessions (trading sessions on an exchange for a given user)
          */
-        Route::get('/bots/sessions', 'BotSessionController@allActive');
         Route::get('/bots/{botId}/sessions', 'BotSessionController@index');
         Route::post('/bots/{botId}/sessions', 'BotSessionController@store');
         Route::get('/bots/{botId}/sessions/{id}', 'BotSessionController@show');
@@ -184,6 +184,13 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/orders/{id}/fills', 'OrderController@getFills');
         Route::post('/orders/{id}/fills', 'OrderController@storeFill');
         Route::delete('/orders/{orderId}/fills/{id}', 'OrderController@deleteFill');
+
+        /**
+         * Datasets (a given partition of exchange data, for easily backtesting certain market conditions)
+         */
+        Route::get('/datasets', 'DatasetController@index');
+        Route::post('/datasets', 'DatasetController@store');
+        Route::delete('/datasets/{id}', 'DatasetController@delete');
     });
 
 
@@ -192,7 +199,7 @@ Route::middleware(['auth'])->group(function() {
      */
     Route::group([
         'prefix' => 'news',
-        'namespace' => 'News'
+        'namespace' => 'App\Http\Controllers\News'
     ], function() {
         /**
          * News article categories
@@ -237,7 +244,7 @@ Route::middleware(['auth'])->group(function() {
      */
     Route::group([
         'prefix' => 'marketplace',
-        'namespace' => 'Marketplace'
+        'namespace' => 'App\Http\Controllers\Marketplace'
     ], function() {
         /**
          * Payment processor types
@@ -283,16 +290,16 @@ Route::middleware(['auth'])->group(function() {
         /**
          * Product orders
          */
-        Route::get('/product-orders', 'ProductOrderController@index');
-        Route::post('/product-orders', 'ProductOrderController@store');
-        Route::get('/product-orders/{id}', 'ProductOrderController@show');
-        Route::put('/product-orders/{id}', 'ProductOrderController@update');
-        Route::delete('/product-orders/{id}', 'ProductOrderController@delete');
+        Route::get('/orders', 'ProductOrderController@index');
+        Route::post('/orders', 'ProductOrderController@store');
+        Route::get('/orders/{id}', 'ProductOrderController@show');
+        Route::put('/orders/{id}', 'ProductOrderController@update');
+        Route::delete('/orders/{id}', 'ProductOrderController@delete');
 
         /**
          * Product order payments
          */
-        Route::get('/product-orders/{id}/payments', 'ProductOrderPaymentController@index');
+        Route::get('/orders/{id}/payments', 'ProductOrderPaymentController@index');
 
         /**
          * Discount codes
@@ -312,10 +319,19 @@ Route::middleware(['auth'])->group(function() {
         Route::delete('/sellers/{id}', 'SellerAccountController@delete');
 
         /**
+         * Seller account withdraw methods
+         */
+
+        /**
          * Seller account withdraws
          */
-        Route::get('/sellers/{id}/withdraws', 'SellerAccountWithdrawController@index');
-        Route::post('/sellers/{id}/withdraws', 'SellerAccountWithdrawController@store');
-        Route::put('/sellers/{sellerId}/withdraws/{id}', 'SellerAccountWithdrawController@update');
+        Route::get('/sellers/{id}/withdraws', 'WithdrawController@index');
+        Route::post('/sellers/{id}/withdraws', 'WithdrawController@store');
+        Route::put('/sellers/{sellerId}/withdraws/{id}', 'WithdrawController@delete');
+
+        /**
+         * User account payment methods
+         */
+
     });
 });

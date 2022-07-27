@@ -15,9 +15,7 @@ class ProductOrderPayment extends Model
     protected $fillable = [
         'order_id',
         'buyer_id',
-        'payment_processor_type_id',
-        'payment_processor_id',
-        'payment_process_account_id',
+        'payment_method_id',
         'status',
         'commission_amount',
         'tax_amount',
@@ -51,6 +49,6 @@ class ProductOrderPayment extends Model
      */
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentProcessor::class, 'payment_method_type_id');
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 }

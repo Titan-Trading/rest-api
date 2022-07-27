@@ -102,6 +102,7 @@ class CreateMarketingApiTables extends Migration
             $table->decimal('tax_amount');
             $table->decimal('commission_amount');
             $table->decimal('balance_after_withdraw');
+            $table->string('status');
             $table->text('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -223,9 +224,7 @@ class CreateMarketingApiTables extends Migration
             $table->id();
             $table->foreignId('order_id');
             $table->foreignId('buyer_id');
-            $table->foreignId('payment_processor_type_id'); // ex: bank, card, crypto, etc
-            $table->foreignId('payment_processor_id'); // payment processors, ex: stripe
-            $table->string('payment_processor_account_id'); // ex: stripe account id
+            $table->foreignId('payment_method_id'); // ex: bank, card, crypto, etc payment processors, ex: stripe ex: stripe account id
             $table->text('status'); // status of the payment
             $table->decimal('commission_amount');
             $table->decimal('tax_amount');

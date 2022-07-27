@@ -16,13 +16,16 @@ class PaymentProcessorController extends Controller
      */
     public function index(Request $request)
     {
-        $paymentProcessors = PaymentProcessor::query();
+        $query = PaymentProcessor::query();
 
-        if($request->has('type_id')) {
-            $paymentProcessors->whereTypeId($request->type_id);
+        if($request->has('type')) {
+            $type = $request->type;
+            $query->whereHas('types', function($q) use ($type) {
+                $q->whereName($type);
+            });
         }
 
-        $paymentProcessors = $paymentProcessors->get();
+        $paymentProcessors = $query->get();
 
         return response()->json($paymentProcessors);
     }

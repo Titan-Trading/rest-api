@@ -66,4 +66,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(PaymentMethod::class, 'id', 'default_payment_method_id');
     }
+
+    /**
+     * Get payment methods for a user
+     *
+     * @return void
+     */
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class, 'user_id');
+    }
 }

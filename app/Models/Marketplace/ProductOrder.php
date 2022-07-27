@@ -53,13 +53,13 @@ class ProductOrder extends Model
     }
 
     /**
-     * Payment method used on the order
+     * Product pricing model that was sold with the order
      *
      * @return void
      */
-    public function paymentMethod()
+    public function productPrice()
     {
-        return $this->belongsTo(PaymentProcessor::class, 'payment_method_type_id');
+        return $this->belongsTo(ProductPrice::class, 'product_price_id');
     }
 
     /**

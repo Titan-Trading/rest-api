@@ -55,4 +55,12 @@ class Product extends Model
     {
         return $this->hasOne(Image::class, 'featured_image_id');
     }
+
+    /**
+     * The pricing models for the product
+     */
+    public function prices()
+    {
+        return $this->hasMany(ProductPrice::class, 'id', 'product_id');
+    }
 }

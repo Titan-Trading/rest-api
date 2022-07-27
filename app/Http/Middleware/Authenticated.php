@@ -24,7 +24,7 @@ class Authenticated
     {
         // check for custom auth headers
         $accessTokenHeader = $request->header('X-Auth-Token');
-        $apiKeyHeader      = $request->header('X-Api-Key');
+        $apiKeyHeader      = $request->header('ST-Api-Key');
 
         if ($accessTokenHeader) {
             try {

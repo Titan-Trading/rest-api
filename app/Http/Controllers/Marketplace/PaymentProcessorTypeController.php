@@ -16,9 +16,9 @@ class PaymentProcessorTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $paymentProcessorTypes = PaymentProcessorType::query();
+        $query = PaymentProcessorType::query();
 
-        $paymentProcessorTypes = $paymentProcessorTypes->get();
+        $paymentProcessorTypes = $query->get();
 
         return response()->json($paymentProcessorTypes);
     }

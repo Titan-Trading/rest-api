@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SellerAccountWithdraw extends Model
+class Withdraw extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,7 +18,8 @@ class SellerAccountWithdraw extends Model
         'payout_amount',
         'tax_amount',
         'commission_amount',
-        'balance_after_withdraw'
+        'balance_after_withdraw',
+        'status'
     ];
 
     /**

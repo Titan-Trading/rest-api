@@ -33,23 +33,24 @@ class SellerAccountController extends Controller
     {
         $this->validate($request, [
             'owner_id' => ['required', 'exists:users,id'],
-            'payment_method_type_id' => ['required', 'exists:payment_processors,id'],
-            'payment_method_id' => ['required'],
+            'default_withdraw_method_id' => ['required', 'exists:seller_account_withdraw_methods,id'],
             'name' => ['required']
         ], [
             'owner_id_required' => 'Owner id is required',
             'owner_id_exists' => 'Owner must exist',
-            'payment_method_type_id_required' => 'Payment method type id is required',
-            'payment_method_type_id_exists' => 'Payment method type must exist',
-            'payment_method_id_required' => 'Payment method id is required',
+            'default_withdraw_method_id_required' => 'Withdraw method id is required',
+            'default_withdraw_method_id_exists' => 'Withdraw method must exist',
             'name_required' => 'Name is required'
         ]);
+
+        // TODO: verify the payment method details
 
         $seller = new SellerAccount();
         $seller->owner_id = $request->owner_id;
         $seller->payout_method_type_id = $request->payment_method_type_id;
         $seller->payout_method_id = $request->payment_method_id;
         $seller->name = $request->name;
+        $seller->status = 'pending';
         $seller->balance = 0.00;
         $seller->commission_generated = 0.00;
         $seller->revenue_generated = 0.00;
@@ -75,6 +76,13 @@ class SellerAccountController extends Controller
             ], 404);
         }
 
+        // check if owner id matches current user id
+        if($seller->owner_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to view this seller account'
+            ]);
+        }
+
         return response()->json($seller);
     }
 
@@ -94,20 +102,25 @@ class SellerAccountController extends Controller
             ], 404);
         }
 
+        // check if owner id matches current user id
+        if($seller->owner_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to make changes to this seller account'
+            ]);
+        }
+
         $this->validate($request, [
-            'payment_method_type_id' => ['required', 'exists:payment_processors,id'],
-            'payment_method_id' => ['required'],
+            'default_withdraw_method_id' => ['required', 'exists:seller_account_withdraw_methods,id'],
             'name' => ['required']
         ], [
-            'payment_method_type_id_required' => 'Payment method type id is required',
-            'payment_method_type_id_exists' => 'Payment method type must exist',
-            'payment_method_id_required' => 'Payment method id is required',
+            'default_withdraw_method_id_required' => 'Withdraw method id is required',
+            'default_withdraw_method_id_exists' => 'Withdraw method must exist',
             'name_required' => 'Name is required'
         ]);
 
-        $seller->payout_method_type_id = $request->payment_method_type_id;
-        $seller->payout_method_id = $request->payment_method_id;
+        $seller->default_withdraw_method_id = $request->default_withdraw_method_id;
         $seller->name = $request->name;
+        // $seller->status = $request->status ? $request->status : $seller->status; // TODO: create admin controllers
         $seller->save();
 
         return response()->json($seller);
@@ -127,6 +140,13 @@ class SellerAccountController extends Controller
             return response()->json([
                 'message' => 'Not found'
             ], 404);
+        }
+
+        // check if owner id matches current user id
+        if($seller->owner_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to make changes this seller account'
+            ]);
         }
 
         $seller->delete();
