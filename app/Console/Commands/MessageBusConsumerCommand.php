@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Exception;
 use Illuminate\Console\Command;
 use RdKafka;
+use Throwable;
 
 class MessageBusConsumerCommand extends Command
 {
@@ -78,7 +78,7 @@ class MessageBusConsumerCommand extends Command
         // start daemon (never ending loop)
         while (true) {
             try {
-                $messageData = $consumer->consume(100); // ten times a second
+                $messageData = $consumer->consume(1000 * 10);
 
                 // no error - normal response
                 if($messageData->err == RD_KAFKA_RESP_ERR_NO_ERROR) {
@@ -131,7 +131,7 @@ class MessageBusConsumerCommand extends Command
                     }
                 }
             }
-            catch (Exception $ex) {
+            catch (Throwable $ex) {
                 $this->error($ex);
             }
         }

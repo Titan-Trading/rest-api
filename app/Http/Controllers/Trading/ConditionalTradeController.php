@@ -8,10 +8,16 @@ use Illuminate\Http\Request;
 
 class ConditionalTradeController extends Controller
 {
-    //
+    /**
+     * Get list of conditional trades
+     *
+     * @param Request $request
+     * @return void
+     */
     public function index(Request $request)
     {
-        $conditionalTrades = ConditionalTrade::query()->get();
-        return response()->json($conditionalTrades, 200);
+        $conditionalTrades = ConditionalTrade::whereUserId($request->user()->id)->get();
+
+        return response()->json($conditionalTrades);
     }
 }

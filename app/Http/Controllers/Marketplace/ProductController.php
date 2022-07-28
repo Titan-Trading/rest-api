@@ -27,10 +27,7 @@ class ProductController extends Controller
             });
         }
 
-        // search by seller account
-        if($request->has('seller_id') && $request->seller_id) {
-            $query->whereSellerId($request->seller_id);
-        }
+        // TODO: show only products that were created by or purchased by (active order, no failed payments) the current user
 
         $products = $query->get();
 
@@ -73,7 +70,7 @@ class ProductController extends Controller
         $product->sold = 0;
         $product->save();
 
-        // TODO: add categories to a product
+        // TODO: add product to categories
 
         return response()->json($product, 201);
     }
@@ -92,6 +89,13 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Not found'
             ], 404);
+        }
+
+        // TODO: show only products that were created by or purchased by (active order, no failed payments) the current user
+        if($product->seller()->owner_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to make changes to this product'
+            ], 403);
         }
 
         return response()->json($product);
@@ -113,6 +117,7 @@ class ProductController extends Controller
             ], 404);
         }
 
+        // show only products that were created by or purchased by (active order, no failed payments) the current user
         if($product->seller()->owner_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'Unauthorized to make changes to this product'
@@ -149,7 +154,7 @@ class ProductController extends Controller
         $product->sold = $request->sold ? $request->sold : $product->sold;
         $product->save();
 
-        // TODO: add categories to a product
+        // TODO: add product to categories
 
         return response()->json($product);
     }
@@ -170,6 +175,7 @@ class ProductController extends Controller
             ], 404);
         }
 
+        // show only products that were created by or purchased by (active order, no failed payments) the current user
         if($product->seller()->owner_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'Unauthorized to make changes to this product'

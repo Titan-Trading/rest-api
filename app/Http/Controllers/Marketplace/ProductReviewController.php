@@ -22,10 +22,8 @@ class ProductReviewController extends Controller
         if($request->has('product_id') && $request->product_id) {
             $query->whereProductId($request->product_id);
         }
-        // search by reviewer
-        if($request->has('reviewer_id') && $request->reviewer_id) {
-            $query->whereReviewerId($request->reviewer_id);
-        }
+        // show only reviews created by current user
+        $query->whereReviewerId($request->user()->id);
 
         $reviews = $query->get();
 

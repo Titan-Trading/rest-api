@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Trading;
 use App\Http\Controllers\Controller;
 use App\Models\Trading\Bot;
 use App\Models\Trading\BotSession;
+use App\Models\Trading\ExchangeAccount;
 use App\Services\MessageBus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -25,9 +26,12 @@ class BotSessionController extends Controller
      */
     public function allActive(Request $request)
     {
-        $sessions = BotSession::query()->whereActive(true)->with(['connectedExchange', 'bot'])->get();
+        $sessions = BotSession::query()
+            ->whereActive(true)
+            ->with(['connectedExchange', 'bot'])
+            ->get();
 
-        return response()->json($sessions, 200);
+        return response()->json($sessions);
     }
 
     /**
@@ -39,22 +43,24 @@ class BotSessionController extends Controller
      */
     public function index(Request $request, $botId)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
+        }
+
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
         }
 
         $sessions = BotSession::whereUserId($request->user()->id)->whereBotId($botId)->get();
 
-        return response()->json($sessions, 200);
+        return response()->json($sessions);
     }
 
     /**
@@ -66,41 +72,48 @@ class BotSessionController extends Controller
      */
     public function store(Request $request, $botId)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
         $this->validate($request, [
-            'exchange_account_id' => 'required|exists:exchange_accounts,id',
-            'bot_id' => 'required|exists:bots,id',
-            'name' => 'required',
-            'parameters' => 'required',
-            'mode' => 'required',
-            'active' => 'required'
+            'exchange_account_id' => ['required','exists:exchange_accounts,id'],
+            'name' => ['required'],
+            'parameters' => ['required'],
+            'mode' => ['required'],
+            'active' => ['required']
         ], [
             'exchange_account_id_required' => 'Connected exchange id is required',
             'exchange_account_id_exists' => 'Connected exchange is not found',
-            'bot_id_required' => 'Bot id is required',
-            'bot_id_exists' => 'Bot is not found',
             'name_required' => 'Name is required',
             'parameters_required' => 'Parameters is required',
             'mode_required' => 'Mode is required',
             'active_required' => 'Active is required'
         ]);
 
+        // check if exchange account belongs to current user
+        $exchangeAccount = ExchangeAccount::find($request->exchange_account_id);
+        if($exchangeAccount->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this exchange account'
+            ], 403);
+        }
+
         $session = new BotSession();
         $session->user_id = $request->user()->id;
         $session->exchange_account_id = $request->exchange_account_id;
-        $session->bot_id = $request->bot_id;
+        $session->bot_id = $botId;
         $session->name = $request->name;
         $session->parameters = $request->parameters;
         $session->mode = $request->mode;
@@ -135,33 +148,32 @@ class BotSessionController extends Controller
      */
     public function show(Request $request, $botId, $id)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot session id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        $session = BotSession::find($id);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        $session = BotSession::whereUserId($request->user()->id)
+            ->whereBotId($botId)
+            ->whereId($id)
+            ->first();
         if(!$session) {
             return response()->json([
-                'message' => 'Bot session is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        return response()->json($session, 200);
+        return response()->json($session);
     }
 
     /**
@@ -174,52 +186,56 @@ class BotSessionController extends Controller
      */
     public function update(Request $request, $botId, $id)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot session id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        $session = BotSession::find($id);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        $session = BotSession::whereUserId($request->user()->id)
+            ->whereBotId($botId)
+            ->whereId($id)
+            ->first();
         if(!$session) {
             return response()->json([
-                'message' => 'Bot session is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
         $this->validate($request, [
-            'exchange_account_id' => 'required|exists:exchange_accounts,id',
-            'bot_id' => 'required|exists:bots,id',
-            'name' => 'required',
-            'parameters' => 'required',
-            'mode' => 'required',
-            'active' => 'required'
+            'exchange_account_id' => ['required', 'exists:exchange_accounts,id'],
+            'name' => ['required'],
+            'parameters' => ['required'],
+            'mode' => ['required'],
+            'active' => ['required']
         ], [
             'exchange_account_id_required' => 'Connected exchange id is required',
             'exchange_account_id_exists' => 'Connected exchange is not found',
-            'bot_id_required' => 'Bot id is required',
-            'bot_id_exists' => 'Bot is not found',
             'name_required' => 'Name is required',
             'parameters_required' => 'Parameters is required',
             'mode_required' => 'Mode is required',
             'active_required' => 'Active is required'
         ]);
 
+        // check if exchange account belongs to current user
+        $exchangeAccount = ExchangeAccount::find($request->exchange_account_id);
+        if($exchangeAccount->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this exchange account'
+            ], 403);
+        }
+
         $session->exchange_account_id = $request->exchange_account_id;
-        $session->bot_id = $request->bot_id;
+        $session->bot_id = $botId;
         $session->name = $request->name;
         $session->parameters = $request->parameters;
         $session->mode = $request->mode;
@@ -241,7 +257,7 @@ class BotSessionController extends Controller
             'data' => $session->toArray()
         ]);
 
-        return response()->json($session, 200);
+        return response()->json($session);
     }
 
     /**
@@ -254,29 +270,28 @@ class BotSessionController extends Controller
      */
     public function activate(Request $request, $botId, $id)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot session id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        $session = BotSession::find($id);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        $session = BotSession::whereUserId($request->user()->id)
+            ->whereBotId($botId)
+            ->whereId($id)
+            ->first();
         if(!$session) {
             return response()->json([
-                'message' => 'Bot session is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
@@ -298,7 +313,7 @@ class BotSessionController extends Controller
             'data' => $session->toArray()
         ]);
 
-        return response()->json($session, 200);
+        return response()->json($session);
     }
 
     /**
@@ -311,29 +326,28 @@ class BotSessionController extends Controller
      */
     public function deactivate(Request $request, $botId, $id)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot session id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        $session = BotSession::find($id);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        $session = BotSession::whereUserId($request->user()->id)
+            ->whereBotId($botId)
+            ->whereId($id)
+            ->first();
         if(!$session) {
             return response()->json([
-                'message' => 'Bot session is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
@@ -355,7 +369,7 @@ class BotSessionController extends Controller
             'data' => $session->toArray()
         ]);
 
-        return response()->json($session, 200);
+        return response()->json($session);
     }
 
     /**
@@ -368,29 +382,28 @@ class BotSessionController extends Controller
      */
     public function delete(Request $request, $botId, $id)
     {
-        if(!$botId) {
-            return response()->json([
-                'message' => 'Bot id is required'
-            ], 404);
-        }
-
-        if(!$id) {
-            return response()->json([
-                'message' => 'Bot session id is required'
-            ], 404);
-        }
-
         $bot = Bot::find($botId);
         if(!$bot) {
             return response()->json([
-                'message' => 'Bot is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        $session = BotSession::find($id);
+        // check if bot can be access by current user
+        // TODO: show bots that have been purchased (with product order status=active, buyer_id=current user id)
+        if($bot->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this bot'
+            ], 403);
+        }
+
+        $session = BotSession::whereUserId($request->user()->id)
+            ->whereBotId($botId)
+            ->whereId($id)
+            ->first();
         if(!$session) {
             return response()->json([
-                'message' => 'Bot session is not found'
+                'message' => 'Not found'
             ], 404);
         }
 
@@ -411,6 +424,6 @@ class BotSessionController extends Controller
             'data' => $session->toArray()
         ]);
 
-        return response('Success', 200);
+        return response()->json($session);
     }
 }

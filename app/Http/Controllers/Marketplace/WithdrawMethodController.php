@@ -19,6 +19,12 @@ class SellerAccountWithdrawMethodController extends Controller
     {
         $query = WithdrawMethod::query();
 
+        // only show withdraw methods from seller accounts that are owned by current user
+        $currentUserId = $request->user()->id;
+        $query->whereHas('seller', function($q) use ($currentUserId) {
+            $q->whereOwnerId($currentUserId);
+        });
+
         $withdrawMethods = $query->get();
 
         return response()->json($withdrawMethods);
@@ -55,6 +61,8 @@ class SellerAccountWithdrawMethodController extends Controller
             ], 403);
         }
 
+        // TODO: check for pending withdraws
+
         $withdrawMethod = new WithdrawMethod();
         $withdrawMethod->seller_id = $request->seller_id;
         $withdrawMethod->payment_processor_type_id = $request->payment_processor_type_id;
@@ -88,8 +96,10 @@ class SellerAccountWithdrawMethodController extends Controller
             ], 403);
         }
 
+        // TODO: check for pending withdraws
+
         $withdraw->delete();
 
-        return response()->json($withdraw, 200);
+        return response()->json($withdraw);
     }
 }

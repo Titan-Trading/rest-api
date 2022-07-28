@@ -7,19 +7,10 @@ use App\Models\Trading\Exchange;
 use App\Models\Trading\Symbol;
 use Illuminate\Http\Request;
 use App\Services\InfluxDB;
-use App\Services\MessageBus;
-use Illuminate\Support\Str;
 use Exception;
 
 class ExchangeController extends Controller
 {
-    private $messageBus;
-    
-    public function __construct(MessageBus $messageBus)
-    {
-        $this->messageBus = $messageBus;
-    }
-
     /**
      * Exchange list (system wide)
      */
@@ -32,55 +23,7 @@ class ExchangeController extends Controller
 
         $exchanges = $query->get();
 
-        return response($exchanges, 200);
-    }
-
-    /**
-     * Update an exchange
-     */
-    public function update(Request $request, $id)
-    {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Exchange id required'
-            ], 422);
-        }
-
-        $exchange = Exchange::find($id);
-        if(!$exchange) {
-            return response()->json([
-                'message' => 'Exchange not found'
-            ], 404);
-        }
-
-        $this->validate($request, [
-            'website_url' => 'required|string',
-            'is_active' => 'required|boolean',
-            'is_dex' => 'required|boolean',
-            'symbol_template' => 'required|string'
-        ]);
-
-        $exchange->website_url = $request->website_url;
-        $exchange->is_active = $request->is_active;
-        $exchange->is_dex = $request->is_dex;
-        $exchange->symbol_template = $request->symbol_template;
-        $exchange->save();
-
-        /**
-         * Update exchange onto message bus
-         */
-
-        $this->messageBus->sendMessage('exchanges', [
-            'topic' => 'exchanges',
-            'messageType' => 'EVENT',
-            'messageId' => Str::uuid()->toString(),
-            'eventId' => 'UPDATED',
-            'serviceId' => 'simple-trader-api',
-            'instanceId' => env('INSTANCE_ID'),
-            'data' => $exchange->toArray()
-        ]);
-
-        return response()->json($exchange, 200);
+        return response()->json($exchanges);
     }
 
     /**
@@ -88,16 +31,10 @@ class ExchangeController extends Controller
      */
     public function getSymbols(Request $request, $exchangeId)
     {
-        if(!$exchangeId) {
-            return response()->json([
-                'message' => 'Exchange id required'
-            ], 422);
-        }
-
         $exchange = Exchange::find($exchangeId);
         if(!$exchange) {
             return response()->json([
-                'message' => 'Exchange not found'
+                'message' => 'Not found'
             ], 404);
         }
 
@@ -115,125 +52,7 @@ class ExchangeController extends Controller
             ])
             ->get();
 
-        return response()->json($symbols, 200);
-    }
-
-    /**
-     * Add symbol to an exchange
-     */
-    public function addSymbol(Request $request, $exchangeId, $symbolId)
-    {
-        if(!$exchangeId) {
-            return response()->json([
-                'message' => 'Exchange id required'
-            ], 422);
-        }
-
-        $exchange = Exchange::find($exchangeId);
-        if(!$exchange) {
-            return response()->json([
-                'message' => 'Exchange not found'
-            ], 404);
-        }
-
-        if(!$symbolId) {
-            return response()->json([
-                'message' => 'Symbol id required'
-            ], 422);
-        }
-
-        $symbol = Symbol::find($symbolId);
-        if(!$symbol) {
-            return response()->json([
-                'message' => 'Symbol not found'
-            ], 404);
-        }
-
-        $symbolFound = Symbol::whereId($request->symbol_id)->whereHas('exchanges', function($q) use ($exchangeId) {
-            $q->where('exchanges.id', $exchangeId)->where('exchange_symbol.is_active', true);
-        })->first();
-        if($symbolFound) {
-            return response()->json([
-                'message' => 'Exchange already has symbol'
-            ], 422);
-        }
-
-        $exchange->symbols()->attach($symbol);
-
-        /**
-         * Add symbol to exchange onto message bus
-         */
-
-        $this->messageBus->sendMessage('exchanges', [
-            'topic' => 'exchanges',
-            'messageType' => 'EVENT',
-            'messageId' => Str::uuid()->toString(),
-            'eventId' => 'SYMBOL_ADDED',
-            'serviceId' => 'simple-trader-api',
-            'instanceId' => env('INSTANCE_ID'),
-            'data' => $exchange->toArray()
-        ]);
-
-        return response()->json([], 200);
-    }
-
-    /**
-     * Remove symbol from an exchange
-     */
-    public function removeSymbol(Request $request, $exchangeId, $symbolId)
-    {
-        if(!$exchangeId) {
-            return response()->json([
-                'message' => 'Exchange id required'
-            ], 422);
-        }
-
-        $exchange = Exchange::find($exchangeId);
-        if(!$exchange) {
-            return response()->json([
-                'message' => 'Exchange not found'
-            ], 404);
-        }
-
-        if(!$symbolId) {
-            return response()->json([
-                'message' => 'Symbol id required'
-            ], 422);
-        }
-
-        $symbol = Symbol::find($symbolId);
-        if(!$symbol) {
-            return response()->json([
-                'message' => 'Symbol not found'
-            ], 404);
-        }
-
-        $symbolFound = Symbol::whereId($symbolId)->whereHas('exchanges', function($q) use ($exchangeId) {
-            $q->where('exchanges.id', $exchangeId)->where('exchange_symbol.is_active', true);
-        })->first();
-        if(!$symbolFound) {
-            return response()->json([
-                'message' => 'Exchange does not have symbol'
-            ], 422);
-        }
-
-        $exchange->symbols()->detach($symbol);
-
-        /**
-         * Add symbol to exchange onto message bus
-         */
-
-        $this->messageBus->sendMessage('exchanges', [
-            'topic' => 'exchanges',
-            'messageType' => 'EVENT',
-            'messageId' => Str::uuid()->toString(),
-            'eventId' => 'SYMBOL_REMOVED',
-            'serviceId' => 'simple-trader-api',
-            'instanceId' => env('INSTANCE_ID'),
-            'data' => $exchange->toArray()
-        ]);
-
-        return response()->json([], 200);
+        return response()->json($symbols);
     }
 
     /**
@@ -241,12 +60,13 @@ class ExchangeController extends Controller
      */
     public function historicalData(Request $request, $exchangeId)
     {
-        if(!$exchangeId) {
+        $exchange = Exchange::find($exchangeId);
+        if(!$exchange) {
             return response()->json([
-                'message' => 'Exchange id required'
-            ], 422);
+                'message' => 'Not found'
+            ], 404);
         }
-
+        
         $this->validate($request, [
             'type' => 'required',
             'interval' => 'required',
@@ -258,13 +78,6 @@ class ExchangeController extends Controller
             'aggregate_interval_required' => 'An aggregate interval is required',
             'symbol_required' => 'A symbol is required'
         ]);
-
-        $exchange = Exchange::find($exchangeId);
-        if(!$exchange) {
-            return response()->json([
-                'message' => 'Exchange not found'
-            ], 404);
-        }
 
         $records = [];
 
@@ -284,7 +97,7 @@ class ExchangeController extends Controller
             $results = $influx->query($queryString);
 
             if(!count($results)) {
-                return response()->json([], 200);
+                return response()->json([]);
             }
 
             $recordCount = count($results[0]->records);
@@ -300,9 +113,9 @@ class ExchangeController extends Controller
             }
         }
         catch(Exception $ex) {
-            return response()->json([], 200);
+            return response()->json([]);
         }
 
-        return response()->json($records, 200);
+        return response()->json($records);
     }
 }

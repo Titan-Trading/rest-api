@@ -23,6 +23,9 @@ class ProductOrderController extends Controller
     {
         $query = ProductOrder::query();
 
+        // TODO: show only orders with a product that was created by the current user
+        // or purchased by (active order, no failed payments) the current user
+
         $orders = $query->get();
 
         return response()->json($orders);
@@ -116,6 +119,9 @@ class ProductOrderController extends Controller
                 'message' => 'Not found'
             ], 404);
         }
+
+        // TODO: show only orders with a product that was created by the current user
+        // or purchased by (active order, no failed payments) the current user
 
         return response()->json($productOrder);
     }

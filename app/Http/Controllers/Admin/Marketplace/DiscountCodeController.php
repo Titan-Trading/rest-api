@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Marketplace;
+namespace App\Http\Controllers\Admin\Marketplace;
 
 use App\Http\Controllers\Controller;
 use App\Models\Marketplace\DiscountCode;

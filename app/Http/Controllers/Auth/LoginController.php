@@ -40,7 +40,9 @@ class LoginController extends Controller
 
         // user not found by email or wrong password
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         // generate access token
@@ -70,10 +72,10 @@ class LoginController extends Controller
             'created_at' => Carbon::now()
         ]);
 
-        return response([
+        return response()->json([
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
-        ], 200);
+        ]);
     }
 
     public function logout(Request $request)
@@ -82,7 +84,9 @@ class LoginController extends Controller
 
         // no access token
         if (!$accessToken) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         try {
@@ -91,17 +95,23 @@ class LoginController extends Controller
 
             // no metadata or user id
             if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
 
             // revoke all refresh tokens for a user
             RefreshToken::whereUserId($jwtData['metadata']->user_id)->update(['revoked' => true]);
 
-            return response('OK', 200);
+            return response()->json([
+                'message' => 'Logged out successfully'
+            ]);
         }
         catch(Exception $ex) {
             Log::info($ex->getMessage());
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
     }
 
@@ -111,14 +121,18 @@ class LoginController extends Controller
 
         // no access token
         if (!$accessToken) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         $refreshToken = $request->get('refresh_token');
 
         // no refresh token
         if (!$request->has('refresh_token') || !$refreshToken) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         try {
@@ -127,31 +141,41 @@ class LoginController extends Controller
 
             // no metadata or user id
             if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
-                return response('Unauthorized', 401);
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
             }
         }
         catch(Exception $ex) {
             Log::info($ex->getMessage());
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         $tokenRecord = RefreshToken::whereRefreshToken($refreshToken)->first();
 
         // no access token found for the refresh token
         if (!$tokenRecord) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         // token has been revoked
         if ($tokenRecord->revoked) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         $user = User::find($tokenRecord->user_id);
 
         // no user found for the access token
         if (!$user) {
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
         try {
@@ -185,11 +209,13 @@ class LoginController extends Controller
             return response()->json([
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
-            ], 200);
+            ]);
         }
         catch (Exception $ex) {
             Log::info($ex->getMessage());
-            return response('Unauthorized', 401);
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
     }
 }

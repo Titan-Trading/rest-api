@@ -16,9 +16,12 @@ class SellerAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $sellers = SellerAccount::query();
+        $query = SellerAccount::query();
 
-        $sellers = $sellers->get();
+        // show only seller accounts that are owned by the current user
+        $query->whereOwnerId($request->user()->id);
+        
+        $sellers = $query->get();
 
         return response()->json($sellers);
     }

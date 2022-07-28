@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Trading;
+namespace App\Http\Controllers\Admin\Trading;
 
 use App\Http\Controllers\Controller;
 use App\Models\Trading\CurrencyType;
@@ -15,6 +15,6 @@ class CurrencyTypeController extends Controller
     {
         $currencyTypes = CurrencyType::all();
 
-        return response()->json($currencyTypes, 200);
+        return response()->json($currencyTypes);
     }
 }

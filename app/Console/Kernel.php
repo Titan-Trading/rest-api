@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\MessageBusConsumerCommand;
 use App\Console\Commands\RegisterServiceCommand;
+use App\Console\Commands\UnregisterServiceCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         RegisterServiceCommand::class,
+        UnregisterServiceCommand::class,
         // MessageBusConsumerCommand::class
     ];
 

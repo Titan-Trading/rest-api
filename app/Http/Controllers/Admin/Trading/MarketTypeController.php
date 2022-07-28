@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Trading;
+namespace App\Http\Controllers\Admin\Trading;
 
 use App\Http\Controllers\Controller;
 use App\Models\Trading\MarketType;
@@ -15,6 +15,6 @@ class MarketTypeController extends Controller
     {
         $marketTypes = MarketType::all();
 
-        return response()->json($marketTypes, 200);
+        return response()->json($marketTypes);
     }
 }

@@ -9,16 +9,26 @@ use Illuminate\Http\Request;
 class IndicatorController extends Controller
 {
     /**
-     * List market indicators
+     * Get list of indicators that either a user has created or has purchased
      *
      * @param Request $request
      * @return void
      */
     public function index(Request $request)
     {
-        $indicators = Indicator::query()->get();
+        $query = Indicator::query()
+            ->whereUserId($request->user()->id);
 
-        return response()->json($indicators, 200);
+        // TODO: show indicators that have been purchased (with product order status=active, buyer_id=current user id)
+
+        // search by indicator name
+        if($request->has('search_text')) {
+            $query->whereName('like', '%' . $request->search_text . '%');
+        }
+        
+        $indicators = $query->get();
+
+        return response()->json($indicators);
     }
 
     /**
@@ -30,8 +40,8 @@ class IndicatorController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|unique:indicators,name',
-            'is_active' => 'required'
+            'name' => ['required', 'unique:indicators,name'],
+            'is_active' => ['required']
         ], [
             'name_required' => 'Name is required',
             'name_unique' => 'Name is not unique',
@@ -56,20 +66,22 @@ class IndicatorController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Indicator id is required'
-            ], 404);
-        }
-
         $indicator = Indicator::find($id);
         if(!$indicator) {
             return response()->json([
-                'message' => 'Indicator not found'
+                'message' => 'Not found'
             ], 404);
         }
 
-        return response()->json($indicator, 200);
+        // check if indicator can be access by current user
+        // TODO: show indicators that have been purchased (with product order status=active, buyer_id=current user id)
+        if($indicator->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to access this indicator'
+            ], 403);
+        }
+
+        return response()->json($indicator);
     }
 
     /**
@@ -81,17 +93,19 @@ class IndicatorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Indicator id is required'
-            ], 404);
-        }
-
         $indicator = Indicator::find($id);
         if(!$indicator) {
             return response()->json([
-                'message' => 'Indicator not found'
+                'message' => 'Not found'
             ], 404);
+        }
+
+        // check if indicator can be access by current user
+        // TODO: show indicators that have been purchased (with product order status=active, buyer_id=current user id)
+        if($indicator->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to change this indicator'
+            ], 403);
         }
 
         $nameRules = ['required'];
@@ -113,7 +127,7 @@ class IndicatorController extends Controller
         $indicator->algorithm_text = $request->algorithm_text ? $request->algorithm_text : $indicator->algorithm_text;
         $indicator->save();
 
-        return response()->json($indicator, 200);
+        return response()->json($indicator);
     }
 
     /**
@@ -124,21 +138,23 @@ class IndicatorController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        if(!$id) {
-            return response()->json([
-                'message' => 'Indicator id is required'
-            ], 404);
-        }
-
         $indicator = Indicator::find($id);
         if(!$indicator) {
             return response()->json([
-                'message' => 'Indicator not found'
+                'message' => 'Not found'
             ], 404);
+        }
+
+        // check if indicator can be access by current user
+        // TODO: show indicators that have been purchased (with product order status=active, buyer_id=current user id)
+        if($indicator->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized to remove this indicator'
+            ], 403);
         }
 
         $indicator->delete();
 
-        return response('Success', 200);
+        return response()->json($indicator);
     }
 }
