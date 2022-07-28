@@ -16,7 +16,9 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::query()->get();
+        $users = User::query()->with(['role' => function($q) {
+            $q->select('id', 'name', 'description');
+        }])->get();
 
         return response()->json($users);
     }
@@ -30,23 +32,27 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-            'profile_image_id' => 'required|exists:images,id'
+            'role_id' => ['required', 'exists:roles,id'],
+            'name' => ['required'],
+            'email' => ['required', 'unique:users,email'],
+            'password' => ['required', 'min:8'],
+            'password_confirm' => ['required', 'same:password'],
+            'profile_image_id' => ['exists:images,id']
         ], [
+            'role_id_required' => 'Role id is required',
+            'role_id_exists' => 'Role must exist',
             'name_required' => 'Name is required',
             'email_required' => 'Email is required',
             'email_unique' => 'Email is not unique',
             'password_required' => 'Password is required',
+            'password_min' => 'Password must be at least 8 characters',
             'password_confirm_required' => 'Password confirmation is required',
             'password_confirm_same' => 'Passwords do not match',
-            'profile_image_id_required' => 'Profile image id is required',
             'profile_image_id_exists' => 'Profile image does not exist'
         ]);
 
         $user = new User();
+        $user->role_id = $request->role_id;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = $request->password;
@@ -98,22 +104,26 @@ class UserController extends Controller
         }
 
         $this->validate($request, [
-            'name' => 'required',
+            'role_id' => ['required', 'exists:roles,id'],
+            'name' => ['required'],
             'email' => $emailRules,
-            'password' => 'required',
-            'password_confirm' => 'required|same:password',
-            'profile_image_id' => 'required|exists:images,id'
+            'password' => ['required', 'min:8'],
+            'password_confirm' => ['required', 'same:password'],
+            'profile_image_id' => ['exists:images,id']
         ], [
+            'role_id_required' => 'Role id is required',
+            'role_id_exists' => 'Role must exist',
             'name_required' => 'Name is required',
             'email_required' => 'Email is required',
             'email_unique' => 'Email is not unique',
             'password_required' => 'Password is required',
+            'password_min' => 'Password must be at least 8 characters',
             'password_confirm_required' => 'Password confirmation is required',
             'password_confirm_same' => 'Passwords do not match',
-            'profile_image_id_required' => 'Profile image id is required',
             'profile_image_id_exists' => 'Profile image does not exist'
         ]);
 
+        $user->role_id = $request->role_id;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = $request->password;

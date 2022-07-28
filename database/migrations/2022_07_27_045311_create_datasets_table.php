@@ -23,8 +23,8 @@ class CreateDatasetsTable extends Migration
             $table->foreignId('symbol_id');
             $table->string('interval');
             $table->string('name');
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at');
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }

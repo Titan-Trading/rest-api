@@ -13,15 +13,9 @@ class Permission extends Model
     protected $table = 'permissions';
 
     protected $fillable = [
-        'role_id',
         'name',
         'resource',
         'action',
         'description'
     ];
-
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
 }
