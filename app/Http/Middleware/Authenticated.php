@@ -84,12 +84,12 @@ class Authenticated
             }
 
             // api key has expired
-            if ($apiKeyRecord->expiration >= Carbon::now()->timestamp) {
-                Log::info('api key expired');
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 401);
-            }
+            // if ($apiKeyRecord->expiration >= Carbon::now()->timestamp) {
+            //     Log::info('api key expired');
+            //     return response()->json([
+            //         'message' => 'Unauthorized'
+            //     ], 401);
+            // }
 
             // find user for api key
             $user = User::find($apiKeyRecord->user_id);
