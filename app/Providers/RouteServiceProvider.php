@@ -56,6 +56,13 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
+            // allow admins to have unlimited requests
+            if($request->user() && $request->user()->hasRole('Administrator')) {
+                return Limit::none();
+            }
+
+            // TODO: give different paid plans different rate limits
+
             return Limit::perMinute(10000)->by(optional($request->user())->id ?: $request->ip());
         });
     }
