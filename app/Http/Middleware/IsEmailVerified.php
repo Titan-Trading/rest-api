@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class IsAdmin
+class IsEmailVerified
 {
     /**
      * Handle an incoming request.
@@ -16,9 +16,10 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!$request->user()->hasRole('Administrator')) {
+        // check for email verification
+        if(is_null($request->user()->email_verified_at)) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Email address must be verified'
             ], 403);
         }
 

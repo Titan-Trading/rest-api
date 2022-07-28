@@ -30,7 +30,7 @@ Route::group([
 /**
  * Authenticated api routes
  */
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth', 'email.verified'])->group(function() {
 
     /**
      * Include all admin api route modules

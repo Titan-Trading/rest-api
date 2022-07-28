@@ -14,10 +14,14 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            // Trading
+            // General
             ImageSeeder::class,
+            PermissionSeeder::class,
+            RoleSeeder::class,
             UserSeeder::class,
             ApiKeySeeder::class,
+
+            // Trading
             ExchangeSeeder::class,
             CurrencyPairSeeder::class,
             ExchangeAccountSeeder::class,

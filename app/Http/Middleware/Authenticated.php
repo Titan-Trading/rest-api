@@ -35,6 +35,7 @@ class Authenticated
 
                 // no metadata or user id
                 if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
+                    Log::info('No metadata or user id found');
                     return response()->json([
                         'message' => 'Unauthorized'
                     ], 401);
@@ -42,6 +43,7 @@ class Authenticated
 
                 $user = User::find($jwtData['metadata']->user_id);
                 if (!$user) {
+                    Log::info('No user found');
                     return response()->json([
                         'message' => 'Unauthorized'
                     ], 401);
@@ -107,13 +109,13 @@ class Authenticated
             $toEncode = $timestamp . strtolower($request->method()) . $request->getPathInfo() . $bodyContent;
             $hashed = base64_encode(hash_hmac('sha512', $toEncode, $apiKeyRecord->secret, true));
 
-            Log::info([$hashed, $signature]);
+            // Log::info([$hashed, $signature]);
 
-            Log::info('to encode: ' . $toEncode);
-            Log::info('hashed: ' . $hashed);
-            Log::info('signature: ' . $signature);
-            Log::info('key: ' . $apiKeyRecord->key);
-            Log::info('secret: ' . $apiKeyRecord->secret);
+            // Log::info('to encode: ' . $toEncode);
+            // Log::info('hashed: ' . $hashed);
+            // Log::info('signature: ' . $signature);
+            // Log::info('key: ' . $apiKeyRecord->key);
+            // Log::info('secret: ' . $apiKeyRecord->secret);
 
             // check generated signature against signature sent
             if ($hashed !== $signature) {
