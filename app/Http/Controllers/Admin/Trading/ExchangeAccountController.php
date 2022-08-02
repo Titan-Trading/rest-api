@@ -35,6 +35,10 @@ class ExchangeAccountController extends Controller
                 }
             ]);
 
+        if($request->has('exchange_id') && $request->exchange_id) {
+            $query->whereExchangeId($request->exchange_id);
+        }
+
         $connectedExchanges = $query->get();
 
         return response($connectedExchanges);
@@ -52,6 +56,7 @@ class ExchangeAccountController extends Controller
             'exchange_id' => ['required', 'exists:exchanges,id']
         ];
 
+        // TODO: check if the exchange being the account is for is a decentralized exchange, use wallet secret key instead
         if($request->wallet_secret_key) {
             $rules['wallet_private_key'][] = 'required';
         }
@@ -112,6 +117,8 @@ class ExchangeAccountController extends Controller
         $rules = [
             'exchange_id' => ['required', 'exists:exchange_accounts,id']
         ];
+
+        // TODO: check if the exchange being the account is for is a decentralized exchange, use wallet secret key instead
         if($request->wallet_secret_key) {
             $rules['wallet_private_key'] = [];
             $rules['wallet_private_key'][] = 'required';

@@ -26,9 +26,12 @@ class SymbolController extends Controller
                 }
             ]);
 
-        // (FUTURE) watched currency pairs (ones pertaining to an active conditional trade or bot)
-        if($request->has('watched') && $request->watched) {
-
+        // TODO: watched currency pairs (ones pertaining to an active conditional trade or bot)
+        if($request->has('exchange_id') && $request->exchange_id) {
+            $exchangeId = $request->exchange_id;
+            $query->whereHas('exchanges', function($q) use ($exchangeId) {
+                $q->where('exchanges.id', $exchangeId);
+            });
         }
 
         $symbols = $query->get();
