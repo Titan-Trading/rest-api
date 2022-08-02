@@ -59,10 +59,10 @@ Route::group([
     /**
      * Exchange accounts (details for using different exchanges to make trades)
      */
-    Route::get('/exchange_accounts', 'ExchangeAccountController@index');
-    Route::post('/exchange_accounts', 'ExchangeAccountController@store');
-    Route::put('/exchange_accounts/{id}', 'ExchangeAccountController@update');
-    Route::delete('/exchange_accounts/{id}', 'ExchangeAccountController@delete');
+    Route::get('/exchange-accounts', 'ExchangeAccountController@index');
+    Route::post('/exchange-accounts', 'ExchangeAccountController@store');
+    Route::put('/exchange-accounts/{id}', 'ExchangeAccountController@update');
+    Route::delete('/exchange-accounts/{id}', 'ExchangeAccountController@delete');
 
     /**
      * Conditional trades (CRUD, conditions and condition operations)
