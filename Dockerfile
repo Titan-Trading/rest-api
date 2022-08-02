@@ -77,9 +77,6 @@ USER $user
 # Install dependencies
 RUN composer install
 
-# Volume to use
-# VOLUME ["/var/www"]
-
 # Set entrypoint permissions
 # RUN chmod +x ./start_up.sh
 
