@@ -21,7 +21,7 @@ class ExchangeAccount extends Model
     ];
 
     protected $hidden = [
-        'api_key_secret'
+        // 'api_key_secret'
     ];
 
     /**
