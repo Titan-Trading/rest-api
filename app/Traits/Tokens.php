@@ -3,8 +3,10 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 
-trait AccessTokens
+trait Tokens
 {
+    protected $jwt;
+    
     /**
      * Create an access token
      */

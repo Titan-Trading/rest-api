@@ -17,7 +17,7 @@ class IsEmailVerified
     public function handle(Request $request, Closure $next)
     {
         // check for email verification
-        if(is_null($request->user()->email_verified_at)) {
+        if($request->user() && is_null($request->user()->email_verified_at)) {
             return response()->json([
                 'message' => 'Email address must be verified'
             ], 403);
