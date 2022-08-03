@@ -20,10 +20,10 @@ class MessageBus
             //$conf->set('log_level', (string) LOG_DEBUG);
             //$conf->set('debug', 'all');
             $conf->set('acks', '1');
-            $conf->set('bootstrap.servers', 'kafka:9092');
+            $conf->set('bootstrap.servers', env('MESSAGE_BUS_HOST', 'kafka:9092'));
 
             $producer = new RdKafka\Producer($conf);
-            $producer->addBrokers("kafka:9092");
+            $producer->addBrokers(env('MESSAGE_BUS_HOST', 'kafka:9092'));
 
             $topicConf = new RdKafka\TopicConf();
             // $topicConf->set('auto.commit.enable', 'false');  // don't commit offset automatically

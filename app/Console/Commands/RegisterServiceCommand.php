@@ -42,6 +42,7 @@ class RegisterServiceCommand extends Command
         $this->info('Register api with micro-service system');
 
         $instanceId = env('INSTANCE_ID');
+        $serviceId = env('SERVICE_ID');
 
         $routeCollection = Route::getRoutes();
 
@@ -72,11 +73,11 @@ class RegisterServiceCommand extends Command
                 'messageType' => 'EVENT',
                 'messageId' => Str::uuid()->toString(),
                 'eventId' => 'SERVICE_ONLINE',
-                'serviceId' => 'simple-trader-api',
+                'serviceId' => $serviceId,
                 'instanceId' => $instanceId,
                 'supportedCommunicationChannels' => ['rest'],
-                'hostname' => 'api-proxy',
-                'port' => 8001,
+                'hostname' => env('APP_HOST'),
+                'port' => env('APP_PORT'),
                 'endpoints' => $endPoints,
                 'commands' => []
             ]);

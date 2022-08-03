@@ -62,7 +62,7 @@ class MessageBusConsumerCommand extends Command
 
 
         $conf->set('group.id', 'st-rest-api');
-        $conf->set('metadata.broker.list', 'kafka:9092');
+        $conf->set('metadata.broker.list', env('MESSAGE_BUS_HOST', 'kafka:9092'));
         $conf->set('auto.offset.reset', 'earliest');
 
         $consumer = new RdKafka\KafkaConsumer($conf);

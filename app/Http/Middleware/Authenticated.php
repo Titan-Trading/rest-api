@@ -64,7 +64,7 @@ class Authenticated
         }
         else if(!empty($apiKeyHeader)) {
             $timestamp = $request->header('st-api-timestamp');
-            $signature = $request->header('st-api-signature');
+            $signature = $request->header('st-api-sign');
 
             // get api key from database
             $apiKeyRecord = ApiKey::where('key', $apiKeyHeader)->first();
@@ -109,13 +109,13 @@ class Authenticated
             $toEncode = $timestamp . strtolower($request->method()) . $request->getPathInfo() . $bodyContent;
             $hashed = base64_encode(hash_hmac('sha512', $toEncode, $apiKeyRecord->secret, true));
 
-            // Log::info([$hashed, $signature]);
-
             // Log::info('to encode: ' . $toEncode);
             // Log::info('hashed: ' . $hashed);
             // Log::info('signature: ' . $signature);
             // Log::info('key: ' . $apiKeyRecord->key);
             // Log::info('secret: ' . $apiKeyRecord->secret);
+
+            // Log::info([$hashed, $signature]);
 
             // check generated signature against signature sent
             if ($hashed !== $signature) {

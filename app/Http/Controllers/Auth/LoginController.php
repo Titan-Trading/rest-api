@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Ahc\Jwt\JWT;
 use App\Models\RefreshToken;
 use App\Models\User;
-use App\Traits\AccessTokens;
+use App\Traits\Tokens;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    use AccessTokens;
+    use Tokens;
     
     protected $jwt;
 
@@ -137,7 +137,7 @@ class LoginController extends Controller
 
         try {
             // decode, check expiration (throws exception)
-            $jwtData = $this->jwt->decode($accessToken);
+            $jwtData = $this->jwt->decode($accessToken, false);
 
             // no metadata or user id
             if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {

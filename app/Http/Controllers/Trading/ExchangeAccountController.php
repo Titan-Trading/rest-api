@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Trading;
 
 use App\Http\Controllers\Controller;
+use App\Models\Trading\Exchange;
 use App\Models\Trading\ExchangeAccount;
 use App\Services\MessageBus;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class ExchangeAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'wallet_private_key')
+        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'api_key_passphrase', 'api_version', 'wallet_private_key')
             ->whereUserId($request->user()->id)
             ->with([
                 // 'user' => function($q) {
@@ -53,12 +54,21 @@ class ExchangeAccountController extends Controller
             'exchange_id' => ['required', 'exists:exchanges,id']
         ];
 
-        if($request->wallet_secret_key) {
+        $exchange = Exchange::find($request->exchange_id);
+        if(!$exchange) {
+            return response()->json([
+                'message' => 'Exchange not found'
+            ], 422);
+        }
+
+        // check if the exchange the account is for is a decentralized exchange, use wallet secret key instead
+        if($exchange->is_dex) {
             $rules['wallet_private_key'][] = 'required';
         }
         else {
-            $rules['api_key'][] = 'required';
+            $rules['api_key'][] = 'required|unique:exchange_accounts,api_key';
             $rules['api_key_secret'][] = 'required';
+            $rules['api_key_passphrase'][] = 'required';
         }
 
         $this->validate($request, $rules, [
@@ -66,17 +76,25 @@ class ExchangeAccountController extends Controller
             'exchange_id_exists' => 'Exchange not found',
             'wallet_private_key_required' => 'Wallet private key is required',
             'api_key_required' => 'API key is required',
-            'api_key_secret_required' => 'API key secret is required'
+            'api_key_unique' => 'API key must be unique',
+            'api_key_secret_required' => 'API key secret is required',
+            'api_key_passphrase_required' => 'API key passphrase is required'
         ]);
-
-        // TODO: check if exchange is active
 
         $exchangeAccount = new ExchangeAccount();
         $exchangeAccount->user_id = $request->user()->id;
         $exchangeAccount->exchange_id = $request->exchange_id;
-        $exchangeAccount->api_key = $request->api_key ? $request->api_key : null;
-        $exchangeAccount->api_key_secret = $request->api_key_secret ? $request->api_key_secret : null;
-        $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : null;
+
+        if($exchange->is_dex) {
+            $exchangeAccount->wallet_private_key = $request->wallet_private_key;
+        }
+        else {
+            $exchangeAccount->api_key = $request->api_key;
+            $exchangeAccount->api_key_secret = $request->api_key_secret;
+            $exchangeAccount->api_key_passphrase = $request->api_key_passphrase;
+            $exchangeAccount->api_version = '2';
+        }
+
         $exchangeAccount->save();
 
         /**
@@ -119,18 +137,29 @@ class ExchangeAccountController extends Controller
             ]);
         }
 
+        $exchange = Exchange::find($request->exchange_id);
+        if(!$exchange) {
+            return response()->json([
+                'message' => 'Exchange not found'
+            ], 422);
+        }
+
         $rules = [
             'exchange_id' => ['required', 'exists:exchange_accounts,id']
         ];
-        if($request->wallet_secret_key) {
-            $rules['wallet_private_key'] = [];
+
+        // check if the exchange the account is for is a decentralized exchange, use wallet secret key instead
+        if($exchange->is_dex) {
             $rules['wallet_private_key'][] = 'required';
         }
         else {
-            $rules['api_key'] = [];
             $rules['api_key'][] = 'required';
-            $rules['api_key_secret'] = [];
+            if($exchangeAccount->api_key != $request->api_key) {
+                $rules['api_key'][] = 'unique:exchange_accounts,api_key';
+            }
+
             $rules['api_key_secret'][] = 'required';
+            $rules['api_key_passphrase'][] = 'required';
         }
 
         $this->validate($request, $rules, [
@@ -138,15 +167,23 @@ class ExchangeAccountController extends Controller
             'exchange_id_exists' => 'Exchange not found',
             'wallet_private_key_required' => 'Wallet private key is required',
             'api_key_required' => 'API key is required',
-            'api_key_secret_required' => 'API key secret is required'
+            'api_key_unique' => 'API key must be unique',
+            'api_key_secret_required' => 'API key secret is required',
+            'api_key_passphrase_required' => 'API key passphrase is required'
         ]);
 
-        // TODO: check if exchange account is active
-
         $exchangeAccount->exchange_id = $request->exchange_id;
-        $exchangeAccount->api_key = $request->api_key ? $request->api_key : $exchangeAccount->api_key;
-        $exchangeAccount->api_key_secret = $request->api_key_secret ? $request->api_key_secret : $exchangeAccount->api_key_secret;
-        $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $exchangeAccount->wallet_private_key;
+
+        if($exchange->is_dex) {
+            $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $exchangeAccount->wallet_private_key;
+        }
+        else {
+            $exchangeAccount->api_key = $request->api_key ? $request->api_key : $exchangeAccount->api_key;
+            $exchangeAccount->api_key_secret = $request->api_key_secret ? $request->api_key_secret : $exchangeAccount->api_key_secret;
+            $exchangeAccount->api_key_passphrase = $request->api_key_passphrase ? $request->api_key_passphrase : $exchangeAccount->api_key_passphrase;
+            $exchangeAccount->api_version = '2';
+        }
+        
         $exchangeAccount->save();
 
         /**

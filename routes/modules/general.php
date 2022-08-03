@@ -61,8 +61,7 @@ Route::group([
     /**
      * Connect tokens (used for external socket gateway access)
      */
-    Route::post('/connect-tokens', 'ConnectTokenController@index');
-    Route::delete('/connect-tokens', 'ConnectTokenController@delete');
+    Route::post('/api-connect-tokens', 'ApiConnectTokenController@getOrStore');
 
     /**
      * Event sourcing (resource, resource id, resource data before and after)
