@@ -25,7 +25,7 @@ class ExchangeAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'wallet_private_key')
+        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'api_key_passphrase', 'api_version', 'wallet_private_key')
             ->with([
                 // 'user' => function($q) {
                 //     $q->select('id', 'name', 'email');
@@ -39,9 +39,9 @@ class ExchangeAccountController extends Controller
             $query->whereExchangeId($request->exchange_id);
         }
 
-        $connectedExchanges = $query->get();
+        $exchangeAccounts = $query->get();
 
-        return response($connectedExchanges);
+        return response($exchangeAccounts);
     }
 
     /**
@@ -73,13 +73,13 @@ class ExchangeAccountController extends Controller
             'api_key_secret_required' => 'API key secret is required'
         ]);
 
-        $connectedExchange = new ExchangeAccount();
-        $connectedExchange->user_id = $request->user()->id;
-        $connectedExchange->exchange_id = $request->exchange_id;
-        $connectedExchange->api_key = $request->api_key ? $request->api_key : null;
-        $connectedExchange->api_key_secret = $request->api_key_secret ? $request->api_key_secret : null;
-        $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : null;
-        $connectedExchange->save();
+        $exchangeAccount = new ExchangeAccount();
+        $exchangeAccount->user_id = $request->user()->id;
+        $exchangeAccount->exchange_id = $request->exchange_id;
+        $exchangeAccount->api_key = $request->api_key ? $request->api_key : null;
+        $exchangeAccount->api_key_secret = $request->api_key_secret ? $request->api_key_secret : null;
+        $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : null;
+        $exchangeAccount->save();
 
         /**
          * Add new exchange account onto message bus
@@ -92,10 +92,10 @@ class ExchangeAccountController extends Controller
             'eventId' => 'CREATED',
             'serviceId' => 'simple-trader-api',
             'instanceId' => env('INSTANCE_ID'),
-            'data' => $connectedExchange->toArray()
+            'data' => $exchangeAccount->toArray()
         ]);
 
-        return response()->json($connectedExchange, 201);
+        return response()->json($exchangeAccount, 201);
     }
 
     /**
@@ -107,8 +107,8 @@ class ExchangeAccountController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $connectedExchange = ExchangeAccount::find($id);
-        if(!$connectedExchange) {
+        $exchangeAccount = ExchangeAccount::find($id);
+        if(!$exchangeAccount) {
             return response()->json([
                 'message' => 'Not found'
             ], 404);
@@ -138,11 +138,11 @@ class ExchangeAccountController extends Controller
             'api_key_secret_required' => 'API key secret is required'
         ]);
 
-        $connectedExchange->exchange_id = $request->exchange_id;
-        $connectedExchange->api_key = $request->api_key ? $request->api_key : $connectedExchange->api_key;
-        $connectedExchange->api_key_secret = $request->api_key_secret ? $request->api_key_secret : $connectedExchange->api_key_secret;
-        $connectedExchange->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $connectedExchange->wallet_private_key;
-        $connectedExchange->save();
+        $exchangeAccount->exchange_id = $request->exchange_id;
+        $exchangeAccount->api_key = $request->api_key ? $request->api_key : $exchangeAccount->api_key;
+        $exchangeAccount->api_key_secret = $request->api_key_secret ? $request->api_key_secret : $exchangeAccount->api_key_secret;
+        $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $exchangeAccount->wallet_private_key;
+        $exchangeAccount->save();
 
         /**
          * Update exchange account onto message bus
@@ -155,10 +155,10 @@ class ExchangeAccountController extends Controller
             'eventId' => 'UPDATED',
             'serviceId' => 'simple-trader-api',
             'instanceId' => env('INSTANCE_ID'),
-            'data' => $connectedExchange->toArray()
+            'data' => $exchangeAccount->toArray()
         ]);
 
-        return response()->json($connectedExchange);
+        return response()->json($exchangeAccount);
     }
 
     /**
@@ -170,14 +170,14 @@ class ExchangeAccountController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        $connectedExchange = ExchangeAccount::find($id);
-        if(!$connectedExchange) {
+        $exchangeAccount = ExchangeAccount::find($id);
+        if(!$exchangeAccount) {
             return response()->json([
                 'message' => 'Connected exchange not found'
             ], 404);
         }
 
-        $connectedExchange->delete();
+        $exchangeAccount->delete();
 
         /**
          * Delete exchange account onto message bus
@@ -190,9 +190,9 @@ class ExchangeAccountController extends Controller
             'eventId' => 'DELETED',
             'serviceId' => 'simple-trader-api',
             'instanceId' => env('INSTANCE_ID'),
-            'data' => $connectedExchange->toArray()
+            'data' => $exchangeAccount->toArray()
         ]);
 
-        return response()->json($connectedExchange);
+        return response()->json($exchangeAccount);
     }
 }

@@ -17,6 +17,8 @@ class ExchangeAccount extends Model
         'exchange_id',
         'api_key',
         'api_key_secret',
+        'api_key_passphrase',
+        'api_version',
         'wallet_private_key',
     ];
 

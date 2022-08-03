@@ -36,10 +36,9 @@ class ApiConnectTokenController extends Controller
         
         // only generate a new one if there's not one that's not expired or revoked
         if(!$apiConnectToken) {
-
             // generate access token
             $jti = Str::uuid()->toString();
-            $expirationDate = Carbon::now()->addDays(100);
+            $expirationDate = Carbon::now()->addDays(365);
             $expiration = $expirationDate->timestamp;
             $audience = 'simple-trader';
             $subject = 'socket-client';
