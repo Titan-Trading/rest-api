@@ -6,34 +6,46 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExchangeDataset extends Model
+class ExchangeKlineData extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'exchange_datasets';
+    protected $table = 'exchange_dataset_klines';
 
     protected $fillable = [
         'creator_id',
+        'exchange_dataset_id',
         'exchange_id',
         'symbol_id',
         'interval',
-        'source',
-        'name',
-        'periods',
-        'year',
-        'started_at',
-        'ended_at'
+        'open',
+        'high',
+        'low',
+        'close',
+        'volume',
+        'base_volume',
+        'timestamp',
+        'date'
     ];
 
     protected $hidden = [
+
     ];
 
     /**
-     * User account that created the dataset
+     * User account that created the dataset data
      */
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    /**
+     * Dataset the data is for
+     */
+    public function dataset()
+    {
+        return $this->belongsTo(ExchangeDataset::class, 'exchange_dataset_id');
     }
 
     /**

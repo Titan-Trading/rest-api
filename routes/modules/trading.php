@@ -109,8 +109,8 @@ Route::group([
     /**
      * Datasets (a given partition of exchange data, for easily backtesting certain market conditions)
      */
-    Route::get('/datasets', 'DatasetController@index');
-    Route::post('/datasets', 'DatasetController@store');
-    Route::put('/datasets/{id}', 'DatasetController@update');
-    Route::delete('/datasets/{id}', 'DatasetController@delete');
+    Route::get('/datasets', 'ExchangeDatasetController@index');
+    Route::post('/datasets', 'ExchangeDatasetController@store');
+    Route::put('/datasets/{id}', 'ExchangeDatasetController@update');
+    Route::delete('/datasets/{id}', 'ExchangeDatasetController@delete');
 });

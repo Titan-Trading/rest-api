@@ -27,6 +27,22 @@ class SymbolController extends Controller
             ]);
 
         // TODO: watched currency pairs (ones pertaining to an active conditional trade or bot)
+        
+        // search by base currency name
+        if($request->has('base_currency') && $request->base_currency) {
+            $baseCurrency = $request->base_currency;
+            $query->whereHas('baseCurrency', function($q) use ($baseCurrency) {
+                $q->whereName($baseCurrency);
+            });
+        }
+        // search by target currency name
+        if($request->has('target_currency') && $request->target_currency) {
+            $targetCurrency = $request->target_currency;
+            $query->whereHas('targetCurrency', function($q) use ($targetCurrency) {
+                $q->whereName($targetCurrency);
+            });
+        }
+        // search by exchange
         if($request->has('exchange_id') && $request->exchange_id) {
             $exchangeId = $request->exchange_id;
             $query->whereHas('exchanges', function($q) use ($exchangeId) {

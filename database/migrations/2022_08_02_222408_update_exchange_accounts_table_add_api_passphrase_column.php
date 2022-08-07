@@ -15,8 +15,8 @@ class UpdateExchangeAccountsTableAddApiPassphraseColumn extends Migration
     {
         //
         Schema::table('exchange_accounts', function(Blueprint $t) {
-            $t->string('api_key_passphrase')->nullable();
-            $t->string('api_version')->nullable();
+            $t->string('api_key_passphrase')->nullable()->after('api_key_secret');
+            $t->string('api_version')->nullable()->after('wallet_private_key');
         });
     }
 

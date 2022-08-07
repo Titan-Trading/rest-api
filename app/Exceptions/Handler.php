@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -47,6 +48,9 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'message' => 'Not found'
             ], 404);
+        }
+        else if($e instanceof ValidationException) {
+            return response()->json($e->errors(), 422);
         }
 
         Log::error($e);
