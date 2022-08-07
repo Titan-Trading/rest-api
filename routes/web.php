@@ -18,3 +18,12 @@ Route::get('/', function () {
         'message' => 'You should not be here. :)'
     ]);
 });
+
+/**
+ * Health check api route
+ */
+Route::get('/health', function() {
+    return response()->json([
+        'message' => 'System is all good'
+    ], 200);
+});

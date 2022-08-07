@@ -37,8 +37,26 @@ class CurrencyPairSeeder extends Seeder
         $currenciesData = [
             'USD' => 'fiat',
             'USDT' => 'crypto',
+            'USDC' => 'crypto',
             'BTC' => 'crypto',
             'ETH' => 'crypto',
+            'SOL' => 'crypto',
+            'CRO' => 'crypto',
+            'ADA' => 'crypto',
+            'SHIB' => 'crypto',
+            'LUNA' => 'crypto',
+            'MATIC' => 'crypto',
+            'DOGE' => 'crypto',
+            'BCH' => 'crypto',
+            'BNB' => 'crypto',
+            'DASH' => 'crypto',
+            'EOS' => 'crypto',
+            'LTC' => 'crypto',
+            'NEO' => 'crypto',
+            'TRX' => 'crypto',
+            'XRP' => 'crypto',
+            'XTZ' => 'crypto',
+            'ZEC' => 'crypto',
             'TSLA' => 'stock'
         ];
         foreach($currenciesData as $name => $type) {
@@ -58,38 +76,88 @@ class CurrencyPairSeeder extends Seeder
 
         // symbols
         $symbolsData = [
-            'USDT' => 'BTC',
-            'USDT' => 'ETH',
-            'BTC' => 'ETH'
+            'USDT' => [
+                'BTC',
+                'ETH',
+                'SHIB',
+                'LUNA',
+                'MATIC',
+                'DOGE',
+                'SOL',
+                'CRO',
+                'ADA',
+                'BCH',
+                'BNB',
+                'DASH',
+                'EOS',
+                'LTC',
+                'NEO',
+                'TRX',
+                'XRP',
+                'XTZ',
+                'ZEC'
+            ],
+            'USDC' => [
+                'BTC'
+            ],
+            'BTC' => [
+                'ETH'
+            ]
         ];
-        foreach($symbolsData as $base => $target) {
+        foreach($symbolsData as $base => $targets) {
             $baseCurrency = Currency::whereName($base)->first();
             if(!$baseCurrency) {
                 continue;
             }
 
-            $targetCurrency = Currency::whereName($target)->first();
-            if(!$targetCurrency) {
-                continue;
-            }
+            foreach($targets as $target) {
+                $targetCurrency = Currency::whereName($target)->first();
+                if(!$targetCurrency) {
+                    continue;
+                }
 
-            $symbol = Symbol::whereBaseCurrencyId($baseCurrency->id)
-                ->whereTargetCurrencyId($targetCurrency->id)
-                ->first();
-            if(!$symbol) {
-                $symbol = new Symbol();
-                $symbol->base_currency_id = $baseCurrency->id;
-                $symbol->target_currency_id = $targetCurrency->id;
-                $symbol->save();
+                $symbol = Symbol::whereBaseCurrencyId($baseCurrency->id)
+                    ->whereTargetCurrencyId($targetCurrency->id)
+                    ->first();
+                if(!$symbol) {
+                    $symbol = new Symbol();
+                    $symbol->base_currency_id = $baseCurrency->id;
+                    $symbol->target_currency_id = $targetCurrency->id;
+                    $symbol->save();
+                }
             }
         }
 
         // symbols on a given exchange
         $exchangeSymbolsData = [
             'KuCoin' => [
-                'USDT' => 'BTC',
-                'USDT' => 'ETH',
-                'BTC' => 'ETH'
+                'USDT' => [
+                    'BTC',
+                    'ETH',
+                    'SHIB',
+                    'LUNA',
+                    'MATIC',
+                    'DOGE',
+                    'SOL',
+                    'CRO',
+                    'ADA',
+                    'BCH',
+                    'BNB',
+                    'DASH',
+                    'EOS',
+                    'LTC',
+                    'NEO',
+                    'TRX',
+                    'XRP',
+                    'XTZ',
+                    'ZEC'
+                ],
+                'USDC' => [
+                    'BTC'
+                ],
+                'BTC' => [
+                    'ETH'
+                ]
             ]
         ];
         foreach($exchangeSymbolsData as $exchangeName => $symbols) {
@@ -100,33 +168,35 @@ class CurrencyPairSeeder extends Seeder
             }
 
             $exchangeSymbols = [];
-            foreach($symbols as $base => $target) {
-                
+            foreach($symbols as $base => $targets) {
+
                 $baseCurrency = Currency::whereName($base)->first();
                 if(!$baseCurrency) {
                     continue;
                 }
 
-                $targetCurrency = Currency::whereName($target)->first();
-                if(!$targetCurrency) {
-                    continue;
-                }
+                foreach($targets as $target) {
+                    $targetCurrency = Currency::whereName($target)->first();
+                    if(!$targetCurrency) {
+                        continue;
+                    }
 
-                $symbol = Symbol::whereBaseCurrencyId($baseCurrency->id)
-                    ->whereTargetCurrencyId($targetCurrency->id)
-                    ->first();
-                if(!$symbol) {
-                    continue;
-                }
+                    $symbol = Symbol::whereBaseCurrencyId($baseCurrency->id)
+                        ->whereTargetCurrencyId($targetCurrency->id)
+                        ->first();
+                    if(!$symbol) {
+                        continue;
+                    }
 
-                // adding supported symbols to an exchange
-                $exchangeSymbols[$symbol->id] = [
-                    'symbol_id' => $symbol->id,
-                    'exchange_id' => $exchange->id,
-                    'is_active' => true,
-                    'updated_at' => Carbon::now(),
-                    'created_at' => Carbon::now()
-                ];                
+                    // adding supported symbols to an exchange
+                    $exchangeSymbols[$symbol->id] = [
+                        'symbol_id' => $symbol->id,
+                        'exchange_id' => $exchange->id,
+                        'is_active' => true,
+                        'updated_at' => Carbon::now(),
+                        'created_at' => Carbon::now()
+                    ];
+                }
             }
 
             $exchange->symbols()->sync($exchangeSymbols);

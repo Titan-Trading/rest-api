@@ -38,13 +38,15 @@ class ExchangeDatasetController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
+            'source' => ['required'],
             'exchange_id' => ['required', 'exists:exchanges,id'],
             'symbol_id' => ['required', 'exists:symbols,id'],
-            'interval' ['required'],
+            'interval' => ['required'],
             'name' => ['required'],
             'started_at' => ['required'],
             'ended_at' => ['required']
         ], [
+            'source_required' => 'Source is required',
             'exchange_id_required' => 'Exchange id is required',
             'exchange_id_exists' => 'Exchange must exist',
             'symbol_id_required' => 'Symbol id is required',
@@ -60,7 +62,9 @@ class ExchangeDatasetController extends Controller
         $dataset->exchange_id = $request->exchange_id;
         $dataset->symbol_id = $request->symbol_id;
         $dataset->interval = $request->interval;
+        $dataset->source = $request->source;
         $dataset->name = $request->name;
+        $dataset->periods = 0;
         $dataset->started_at = $request->started_at;
         $dataset->ended_at = $request->ended_at;
         $dataset->save();
@@ -85,13 +89,15 @@ class ExchangeDatasetController extends Controller
         }
 
         $this->validate($request, [
+            'source' => ['required'],
             'exchange_id' => ['required', 'exists:exchanges,id'],
             'symbol_id' => ['required', 'exists:symbols,id'],
-            'interval' ['required'],
+            'interval' => ['required'],
             'name' => ['required'],
             'started_at' => ['required'],
             'ended_at' => ['required']
         ], [
+            'source_required' => 'Source is required',
             'exchange_id_required' => 'Exchange id is required',
             'exchange_id_exists' => 'Exchange must exist',
             'symbol_id_required' => 'Symbol id is required',
@@ -112,6 +118,7 @@ class ExchangeDatasetController extends Controller
         $dataset->exchange_id = $request->exchange_id;
         $dataset->symbol_id = $request->symbol_id;
         $dataset->interval = $request->interval;
+        $dataset->source = $request->source;
         $dataset->name = $request->name;
         $dataset->started_at = $request->started_at;
         $dataset->ended_at = $request->ended_at;
