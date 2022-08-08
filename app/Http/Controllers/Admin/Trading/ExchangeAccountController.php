@@ -58,11 +58,11 @@ class ExchangeAccountController extends Controller
 
         // TODO: check if the exchange being the account is for is a decentralized exchange, use wallet secret key instead
         if($request->wallet_secret_key) {
-            $rules['wallet_private_key'][] = 'required';
+            $rules['wallet_private_key'] = ['required'];
         }
         else {
-            $rules['api_key'][] = 'required';
-            $rules['api_key_secret'][] = 'required';
+            $rules['api_key'] = ['required'];
+            $rules['api_key_secret'] = ['required'];
         }
 
         $this->validate($request, $rules, [
@@ -120,14 +120,11 @@ class ExchangeAccountController extends Controller
 
         // TODO: check if the exchange being the account is for is a decentralized exchange, use wallet secret key instead
         if($request->wallet_secret_key) {
-            $rules['wallet_private_key'] = [];
-            $rules['wallet_private_key'][] = 'required';
+            $rules['wallet_private_key'] = ['required'];
         }
         else {
-            $rules['api_key'] = [];
-            $rules['api_key'][] = 'required';
-            $rules['api_key_secret'] = [];
-            $rules['api_key_secret'][] = 'required';
+            $rules['api_key'] = ['required'];
+            $rules['api_key_secret'] = ['required'];
         }
 
         $this->validate($request, $rules, [

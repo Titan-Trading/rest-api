@@ -63,12 +63,12 @@ class ExchangeAccountController extends Controller
 
         // check if the exchange the account is for is a decentralized exchange, use wallet secret key instead
         if($exchange->is_dex) {
-            $rules['wallet_private_key'][] = 'required';
+            $rules['wallet_private_key'] = ['required'];
         }
         else {
-            $rules['api_key'][] = 'required|unique:exchange_accounts,api_key';
-            $rules['api_key_secret'][] = 'required';
-            $rules['api_key_passphrase'][] = 'required';
+            $rules['api_key'] = ['required', 'unique:exchange_accounts,api_key'];
+            $rules['api_key_secret'] = ['required'];
+            $rules['api_key_passphrase'] = ['required'];
         }
 
         $this->validate($request, $rules, [
@@ -150,16 +150,16 @@ class ExchangeAccountController extends Controller
 
         // check if the exchange the account is for is a decentralized exchange, use wallet secret key instead
         if($exchange->is_dex) {
-            $rules['wallet_private_key'][] = 'required';
+            $rules['wallet_private_key'] = ['required'];
         }
         else {
-            $rules['api_key'][] = 'required';
+            $rules['api_key'] = ['required'];
             if($exchangeAccount->api_key != $request->api_key) {
-                $rules['api_key'][] = 'unique:exchange_accounts,api_key';
+                $rules['api_key'] = ['unique', 'exchange_accounts,api_key'];
             }
 
-            $rules['api_key_secret'][] = 'required';
-            $rules['api_key_passphrase'][] = 'required';
+            $rules['api_key_secret'] = ['required'];
+            $rules['api_key_passphrase'] = ['required'];
         }
 
         $this->validate($request, $rules, [
