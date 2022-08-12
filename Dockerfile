@@ -78,10 +78,8 @@ USER $user
 RUN composer install
 
 # Set entrypoint permissions
-# RUN chmod +x ./start_up.sh
-
-RUN php artisan service:up
+RUN chmod +x ./start_up.sh
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-ENTRYPOINT ["php-fpm"]
+ENTRYPOINT ["./start_up.sh"]

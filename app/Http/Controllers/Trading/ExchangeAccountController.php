@@ -155,7 +155,7 @@ class ExchangeAccountController extends Controller
         else {
             $rules['api_key'] = ['required'];
             if($exchangeAccount->api_key != $request->api_key) {
-                $rules['api_key'] = ['unique', 'exchange_accounts,api_key'];
+                $rules['api_key'] = ['unique:exchange_accounts,api_key'];
             }
 
             $rules['api_key_secret'] = ['required'];
