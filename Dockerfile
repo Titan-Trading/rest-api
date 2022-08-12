@@ -63,7 +63,7 @@ RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /var/www
 
 # Copy existing application directory permissions
-# COPY --chown=$user . /var/www
+COPY --chown=$user . /var/www
 
 # change file permissions
 RUN chmod 777 /var/www
@@ -71,14 +71,14 @@ RUN chmod 777 /var/www
 # Set working directory
 WORKDIR /var/www
 
+# Set entrypoint permissions
+RUN chmod a+x ./start_up.sh
+
 # Change current user to what the setting in docker-compose.yml
 USER $user
 
 # Install dependencies
 RUN composer install
-
-# Set entrypoint permissions
-RUN chmod +x ./start_up.sh
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
