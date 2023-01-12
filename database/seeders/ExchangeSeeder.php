@@ -37,6 +37,18 @@ class ExchangeSeeder extends Seeder
 
         $exchangesData = [
             [
+                'name'        => 'SimpleTrader',
+                'website_url' => 'https://www.simpletrader.com',
+                'image_name'  => '',
+                'is_active'   => true,
+                'is_dex'      => false,
+                'symbol_template' => '[target]-[base]',
+                'types'       => [
+                    'stock',
+                    'crypto'
+                ]
+            ],
+            [
                 'name'        => 'KuCoin',
                 'website_url' => 'https://www.kucoin.com',
                 'image_name'  => '',

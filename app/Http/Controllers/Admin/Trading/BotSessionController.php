@@ -76,23 +76,17 @@ class BotSessionController extends Controller
             'name' => ['required'],
             'parameters' => ['required'],
             'mode' => ['required'],
-            'active' => ['required']
+            'active' => ['required'],
+            'started_at' => ['required']
         ], [
             'exchange_account_id_required' => 'Connected exchange id is required',
             'exchange_account_id_exists' => 'Connected exchange is not found',
             'name_required' => 'Name is required',
             'parameters_required' => 'Parameters is required',
             'mode_required' => 'Mode is required',
-            'active_required' => 'Active is required'
+            'active_required' => 'Active is required',
+            'started_at_required' => 'Start date is required'
         ]);
-
-        // check if exchange account belongs to current user
-        $exchangeAccount = ExchangeAccount::find($request->exchange_account_id);
-        if($exchangeAccount->user_id !== $request->user()->id) {
-            return response()->json([
-                'message' => 'Unauthorized to access this exchange account'
-            ], 403);
-        }
 
         $session = new BotSession();
         $session->user_id = $request->user()->id;
@@ -100,8 +94,11 @@ class BotSessionController extends Controller
         $session->bot_id = $botId;
         $session->name = $request->name;
         $session->parameters = $request->parameters;
+        $session->algorithm_text_compiled = $bot->algorithm_text_compiled;
         $session->mode = $request->mode;
         $session->active = $request->active;
+        $session->started_at = $request->started_at;
+        $session->ended_at = $request->ended_at ? $request->ended_at : null;
         $session->save();
 
         /**
@@ -184,23 +181,17 @@ class BotSessionController extends Controller
             'name' => ['required'],
             'parameters' => ['required'],
             'mode' => ['required'],
-            'active' => ['required']
+            'active' => ['required'],
+            'started_at' => ['required']
         ], [
             'exchange_account_id_required' => 'Connected exchange id is required',
             'exchange_account_id_exists' => 'Connected exchange is not found',
             'name_required' => 'Name is required',
             'parameters_required' => 'Parameters is required',
             'mode_required' => 'Mode is required',
-            'active_required' => 'Active is required'
+            'active_required' => 'Active is required',
+            'started_at_required' => 'Start date is required'
         ]);
-
-        // check if exchange account belongs to current user
-        $exchangeAccount = ExchangeAccount::find($request->exchange_account_id);
-        if($exchangeAccount->user_id !== $request->user()->id) {
-            return response()->json([
-                'message' => 'Unauthorized to access this exchange account'
-            ], 403);
-        }
 
         $session->exchange_account_id = $request->exchange_account_id;
         $session->bot_id = $botId;
@@ -208,6 +199,8 @@ class BotSessionController extends Controller
         $session->parameters = $request->parameters;
         $session->mode = $request->mode;
         $session->active = $request->active;
+        $session->started_at = $request->started_at;
+        $session->ended_at = $request->ended_at ? $request->ended_at : $session->ended_at;
         $session->save();
 
         /**

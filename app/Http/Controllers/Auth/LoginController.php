@@ -22,7 +22,7 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 5 mins
+        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 3600); // 1 hour
     }
 
     public function login(Request $request)

@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Image;
 use App\Models\Role;
+use App\Models\Trading\Exchange;
+use App\Models\Trading\ExchangeAccount;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -31,6 +33,20 @@ class UserSeeder extends Seeder
                 'name'               => 'Exchange Listener',
                 'role'               => 'Administrator',
                 'email'              => 'exchange.listener@simpletrader.com',
+                'password'           => 'test123',
+                'profile_image_name' => 'test'
+            ],
+            [
+                'name'               => 'Socket Gateway',
+                'role'               => 'Administrator',
+                'email'              => 'socket.gateway@simpletrader.com',
+                'password'           => 'test123',
+                'profile_image_name' => 'test'
+            ],
+            [
+                'name'               => 'Backtester',
+                'role'               => 'Administrator',
+                'email'              => 'backtester@simpletrader.com',
                 'password'           => 'test123',
                 'profile_image_name' => 'test'
             ]
@@ -61,6 +77,23 @@ class UserSeeder extends Seeder
             $user->email_verified_at = Carbon::now();
             $user->remember_token    = Str::random(24);
             $user->save();
+
+            // if user automatically add simpletrader exchange
+            if($userData['name'] == 'Administrator') {
+                $exchangeAccount = ExchangeAccount::whereUserId($user->id)->whereHas('exchange', function($q) {
+                    $q->whereName('SimpleTrader');
+                })->first();
+                if(!$exchangeAccount) {
+                    $exchange = Exchange::whereName('SimpleTrader')->first();
+
+                    $exchangeAccount = new ExchangeAccount();
+                    $exchangeAccount->exchange_id = $exchange->id;
+                    $exchangeAccount->user_id = $user->id;
+                    $exchangeAccount->api_key = 'demo';
+                    $exchangeAccount->api_key_secret = 'demo';
+                    $exchangeAccount->save();
+                }
+            }
         }
     }
 }
