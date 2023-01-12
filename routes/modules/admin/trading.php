@@ -32,15 +32,6 @@ Route::group([
     Route::delete('/symbols/{id}', 'SymbolController@delete');
 
     /**
-     * Market indicators (CRUD, algorithm script)
-     */
-    Route::get('/indicators', 'IndicatorController@index');
-    Route::post('/indicators', 'IndicatorController@store');
-    Route::get('/indicators/{id}', 'IndicatorController@show');
-    Route::put('/indicators/{id}', 'IndicatorController@update');
-    Route::delete('/indicators/{id}', 'IndicatorController@delete');
-
-    /**
      * Market types (CRUD)
      */
     Route::get('/market-types', 'MarketTypeController@index');
@@ -61,8 +52,28 @@ Route::group([
      */
     Route::get('/exchange-accounts', 'ExchangeAccountController@index');
     Route::post('/exchange-accounts', 'ExchangeAccountController@store');
+    Route::get('/exchange-accounts/{id}', 'ExchangeAccountController@show');
     Route::put('/exchange-accounts/{id}', 'ExchangeAccountController@update');
     Route::delete('/exchange-accounts/{id}', 'ExchangeAccountController@delete');
+
+    /**
+     * Market indicators (CRUD, algorithm script)
+     */
+    Route::get('/indicators', 'IndicatorController@index');
+    Route::post('/indicators', 'IndicatorController@store');
+    Route::get('/indicators/tests', 'IndicatorTestController@allActive');
+    Route::get('/indicators/{id}', 'IndicatorController@show');
+    Route::put('/indicators/{id}', 'IndicatorController@update');
+    Route::delete('/indicators/{id}', 'IndicatorController@delete');
+
+    /**
+     * Indicator tests (mock indicator test on an exchange for a given user)
+     */
+    Route::get('/indicators/{indicatorId}/tests', 'IndicatorTestController@index');
+    Route::post('/indicators/{indicatorId}/tests', 'IndicatorTestController@store');
+    Route::get('/indicators/{indicatorId}/tests/{id}', 'IndicatorTestController@show');
+    Route::put('/indicators/{indicatorId}/tests/{id}', 'IndicatorTestController@update');
+    Route::delete('/indicators/{indicatorId}/tests/{id}', 'IndicatorTestController@delete');
 
     /**
      * Conditional trades (CRUD, conditions and condition operations)
@@ -78,6 +89,7 @@ Route::group([
      */
     Route::get('/bots', 'BotController@index');
     Route::get('/bots/sessions', 'BotSessionController@allActive');
+    Route::get('/bots/sessions/{id}', 'BotSessionController@show');
     Route::post('/bots', 'BotController@store');
     Route::get('/bots/{id}', 'BotController@show');
     Route::put('/bots/{id}', 'BotController@update');
@@ -93,6 +105,8 @@ Route::group([
     Route::put('/bots/{botId}/sessions/{id}/activate', 'BotSessionController@activate');
     Route::put('/bots/{botId}/sessions/{id}/deactivate', 'BotSessionController@deactivate');
     Route::delete('/bots/{botId}/sessions/{id}', 'BotSessionController@delete');
+    Route::post('/bots/{botId}/sessions/{id}/results', 'BotSessionResultController@store');
+    Route::get('/bots/{botId}/sessions/{id}/results', 'BotSessionResultController@show');
 
     /**
      * Orders (CRUD, fills, open orders)

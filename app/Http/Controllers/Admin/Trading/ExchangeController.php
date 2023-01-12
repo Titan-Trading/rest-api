@@ -30,6 +30,10 @@ class ExchangeController extends Controller
                 $q->select('market_types.id', 'market_types.name');
             }]);
 
+        if($request->is_active) {
+            $query->whereIsActive(true);
+        }
+
         $exchanges = $query->get();
 
         return response()->json($exchanges);

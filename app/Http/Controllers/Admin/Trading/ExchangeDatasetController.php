@@ -127,6 +127,7 @@ class ExchangeDatasetController extends Controller
         $dataset->name = $request->name;
         $dataset->started_at = $request->started_at;
         $dataset->ended_at = $request->ended_at;
+        $dataset->periods = $request->periods ? $request->periods : $dataset->periods;
         $dataset->save();
 
         return response()->json($dataset);

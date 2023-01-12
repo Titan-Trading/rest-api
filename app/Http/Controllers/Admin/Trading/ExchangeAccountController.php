@@ -45,6 +45,29 @@ class ExchangeAccountController extends Controller
     }
 
     /**
+     * Exchange account by id
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function show(Request $request, $id)
+    {
+        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'api_key_passphrase', 'api_version', 'wallet_private_key')
+            ->with([
+                // 'user' => function($q) {
+                //     $q->select('id', 'name', 'email');
+                // },
+                'exchange' => function($q) {
+                    $q->select('id', 'name');
+                }
+            ])->whereId($id);
+
+        $exchangeAccount = $query->first();
+
+        return response()->json($exchangeAccount);
+    }
+
+    /**
      * Create exchange account
      *
      * @param Request $request

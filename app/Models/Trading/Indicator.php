@@ -13,9 +13,13 @@ class Indicator extends Model
     protected $table = 'indicators';
 
     protected $fillable = [
+        'user_id',
         'name',
         'is_active',
-        'algorithm_text'
+        'algorithm_text',
+        'algorithm_text_compiled',
+        'algorithm_version',
+        'parameter_options'
     ];
 
     /**

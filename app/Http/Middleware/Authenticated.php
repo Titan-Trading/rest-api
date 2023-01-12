@@ -28,7 +28,7 @@ class Authenticated
 
         if (!empty($accessTokenHeader)) {
             try {
-                $jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 5 mins
+                $jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 3600); // 1 hour
 
                 // decode, check expiration (throws exception)
                 $jwtData = $jwt->decode($accessTokenHeader);
@@ -109,13 +109,13 @@ class Authenticated
             $toEncode = $timestamp . strtolower($request->method()) . $request->getPathInfo() . $bodyContent;
             $hashed = base64_encode(hash_hmac('sha512', $toEncode, $apiKeyRecord->secret, true));
 
-            Log::info('to encode: ' . $toEncode);
-            Log::info('hashed: ' . $hashed);
-            Log::info('signature: ' . $signature);
-            Log::info('key: ' . $apiKeyRecord->key);
-            Log::info('secret: ' . $apiKeyRecord->secret);
+            // Log::info('to encode: ' . $toEncode);
+            // Log::info('hashed: ' . $hashed);
+            // Log::info('signature: ' . $signature);
+            // Log::info('key: ' . $apiKeyRecord->key);
+            // Log::info('secret: ' . $apiKeyRecord->secret);
 
-            Log::info([$hashed, $signature]);
+            // Log::info([$hashed, $signature]);
 
             // check generated signature against signature sent
             if ($hashed !== $signature) {

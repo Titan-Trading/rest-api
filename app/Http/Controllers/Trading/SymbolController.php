@@ -41,9 +41,17 @@ class SymbolController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $symbol = Symbol::whereId($id)->with(['exchanges' => function($q) {
-            $q->select('exchanges.id', 'name');
-        }])->first();
+        $symbol = Symbol::whereId($id)->with([
+            'exchanges' => function($q) {
+                $q->select('exchanges.id', 'name');
+            },
+            'baseCurrency' => function($q) {
+                $q->select('id', 'name');
+            },
+            'targetCurrency' => function($q) {
+                $q->select('id', 'name');
+            }
+        ])->first();
         if(!$symbol) {
             return response()->json([
                 'message' => 'Symbol not found'

@@ -17,7 +17,8 @@ class IndicatorSeeder extends Seeder
         $marketIndicatorsData = [
             [
                 'name'      => 'RSI',
-                'is_active' => true
+                'is_active' => true,
+                'algorithm_text' => " "
             ],
         ];
 
@@ -29,6 +30,7 @@ class IndicatorSeeder extends Seeder
             }
 
             $marketIndicator->is_active = $marketIndicatorData['is_active'];
+            $marketIndicator->algorithm_text = $marketIndicatorData['algorithm_text'];
             $marketIndicator->save();
         }
     }
