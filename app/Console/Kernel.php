@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GenerateMetricsCommand;
 use App\Console\Commands\MessageBusConsumerCommand;
 use App\Console\Commands\RegisterServiceCommand;
 use App\Console\Commands\UnregisterServiceCommand;
