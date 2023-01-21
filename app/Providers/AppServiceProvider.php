@@ -16,8 +16,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Relation::morphMap([
+            'user' => 'App\Models\User',
             'bot' => 'App\Models\Trading\Bot',
             'indicator' => 'App\Models\Trading\Indicator',
+            // 'signal' => 'App\Models\Trading\Signal',
             'payment_processor' => 'App\Models\Marketing\PaymentProcessor'
         ]);
     }

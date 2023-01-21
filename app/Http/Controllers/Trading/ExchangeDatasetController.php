@@ -13,7 +13,7 @@ class ExchangeDatasetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ExchangeDataset::query()->whereCreatorId($request->user()->id);
+        $query = ExchangeDataset::query();
 
         // search by exchange id
         if($request->has('exchange_id') && $request->exchange_id) {

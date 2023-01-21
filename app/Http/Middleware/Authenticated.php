@@ -36,14 +36,17 @@ class Authenticated
                 // no metadata or user id
                 if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
                     Log::info('No metadata or user id found');
+
                     return response()->json([
                         'message' => 'Unauthorized'
                     ], 401);
                 }
-
+                
+                // find the user
                 $user = User::find($jwtData['metadata']->user_id);
                 if (!$user) {
                     Log::info('No user found');
+
                     return response()->json([
                         'message' => 'Unauthorized'
                     ], 401);
@@ -57,6 +60,7 @@ class Authenticated
             }
             catch (Exception $ex) {
                 Log::info($ex);
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -72,6 +76,7 @@ class Authenticated
             // no record found
             if (!$apiKeyRecord) {
                 Log::info('No api key record found');
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -80,6 +85,7 @@ class Authenticated
             // api key was revoked
             if ($apiKeyRecord->revoked) {
                 Log::info('api key revoked');
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -97,6 +103,7 @@ class Authenticated
             $user = User::find($apiKeyRecord->user_id);
             if (!$user) {
                 Log::info('No user found');
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -120,6 +127,7 @@ class Authenticated
             // check generated signature against signature sent
             if ($hashed !== $signature) {
                 Log::info('Signature does not match');
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -132,7 +140,9 @@ class Authenticated
             });
         }
         else {
+            // no access token or api key header found
             Log::info('No access token or api key found');
+            
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);

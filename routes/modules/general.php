@@ -10,6 +10,11 @@ Route::group([
     'namespace' => 'General'
 ], function() {
     /**
+     * Details about the current user
+     */
+    Route::get('/balance', 'CurrentUserController@getBalance');
+
+    /**
      * Images (CRUD)
      */
     Route::get('/images', 'ImageController@index');
@@ -51,6 +56,12 @@ Route::group([
     Route::delete('/users/{id}', 'UserController@delete');
 
     /**
+     * User settings
+     */
+    Route::get('/settings', 'UserSettingController@index');
+    Route::put('/settings', 'UserSettingController@update');
+
+    /**
      * Api keys (used for external api gateway access)
      */
     Route::get('/api-keys', 'ApiKeyController@index');
@@ -64,6 +75,11 @@ Route::group([
     Route::post('/api-connect-tokens', 'ApiConnectTokenController@getOrStore');
 
     /**
+     * Metrics
+     */
+    Route::get('/metrics/{name}', 'MetricController@index');
+    
+    /**
      * Event sourcing (resource, resource id, resource data before and after)
      */
     // Route::get('/events', 'EventSourceController@index');
@@ -71,4 +87,13 @@ Route::group([
     // Route::get('/events/{id}', 'EventSourceController@show');
     // Route::put('/events/{id}', 'EventSourceController@update');
     // Route::delete('/events/{id}', 'EventSourceController@delete');
+
+    /**
+     * Support tickets
+     */
+    Route::get('/support-tickets', 'SupportTicketController@index');
+    Route::post('/support-tickets', 'SupportTicketController@store');
+    Route::get('/support-tickets/{id}', 'SupportTicketController@show');
+    Route::put('/support-tickets/{id}', 'SupportTicketController@update');
+    Route::delete('/support-tickets/{id}', 'SupportTicketController@delete');
 });

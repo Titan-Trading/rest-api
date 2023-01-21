@@ -75,8 +75,8 @@ class UnregisterServiceCommand extends Command
                 'serviceId' => 'simple-trader-api',
                 'instanceId' => $instanceId,
                 'supportedCommunicationChannels' => ['rest'],
-                'hostname' => 'api-proxy',
-                'port' => 8001,
+                'hostname' => env('APP_HOST'),
+                'port' => env('APP_PORT'),
                 'endpoints' => $endPoints,
                 'commands' => []
             ]);

@@ -34,7 +34,7 @@ class BotController extends Controller
             $query->whereName('like', '%' . $request->search_text . '%');
         }
 
-        $bots = $query->get();
+        $bots = $query->orderBy('updated_at', 'desc')->get();
 
         return response()->json($bots);
     }

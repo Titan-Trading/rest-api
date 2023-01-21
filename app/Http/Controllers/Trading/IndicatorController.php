@@ -35,7 +35,7 @@ class IndicatorController extends Controller
             $query->whereName('like', '%' . $request->search_text . '%');
         }
         
-        $indicators = $query->get();
+        $indicators = $query->orderBy('updated_at', 'desc')->get();
 
         return response()->json($indicators);
     }

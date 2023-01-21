@@ -22,7 +22,7 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 3600); // 1 hour
+        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 1 hour
     }
 
     public function login(Request $request)
@@ -33,10 +33,10 @@ class LoginController extends Controller
         ]);
 
         // convert email to lowercase
-        $request->email = strtolower($request->email);
+        $email = strtolower($request->email);
 
         // get user by email 
-        $user = User::whereEmail($request->email)->first();
+        $user = User::whereEmail($email)->first();
 
         // user not found by email or wrong password
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -121,6 +121,8 @@ class LoginController extends Controller
 
         // no access token
         if (!$accessToken) {
+            Log::info('no access token');
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -130,6 +132,8 @@ class LoginController extends Controller
 
         // no refresh token
         if (!$request->has('refresh_token') || !$refreshToken) {
+            Log::info('no refresh token');
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -141,6 +145,8 @@ class LoginController extends Controller
 
             // no metadata or user id
             if(!isset($jwtData['metadata']) || !isset($jwtData['metadata']->user_id)) {
+                Log::info('no metadata or user id');
+
                 return response()->json([
                     'message' => 'Unauthorized'
                 ], 401);
@@ -157,6 +163,8 @@ class LoginController extends Controller
 
         // no access token found for the refresh token
         if (!$tokenRecord) {
+            Log::info('no access token found for the refresh token');
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -164,6 +172,9 @@ class LoginController extends Controller
 
         // token has been revoked
         if ($tokenRecord->revoked) {
+            Log::info('token has been revoked');
+            Log::info($tokenRecord);
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -173,6 +184,8 @@ class LoginController extends Controller
 
         // no user found for the access token
         if (!$user) {
+            Log::info('no user found for the access token');
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -213,6 +226,7 @@ class LoginController extends Controller
         }
         catch (Exception $ex) {
             Log::info($ex->getMessage());
+
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
