@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         RegisterServiceCommand::class,
         UnregisterServiceCommand::class,
+        GenerateMetricsCommand::class,
         // MessageBusConsumerCommand::class
     ];
 
