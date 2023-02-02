@@ -67,8 +67,10 @@ class BotController extends Controller
         $bot->user_id = $request->user()->id;
         $bot->name = $request->name ? $request->name : $generator->getName();
         $bot->algorithm_text = $request->algorithm_text ? $request->algorithm_text : $strategyTemplate;
+        $bot->algorithm_text_version = 1;
         $bot->algorithm_version = 1;
         $bot->parameter_options = '{}';
+        $bot->event_streams = '{}';
         $bot->symbols = '{}';
         $bot->indicators = '{}';
         $bot->save();
@@ -136,16 +138,25 @@ class BotController extends Controller
             'parameter_options' => 'Parameter options is required'
         ]);
 
-        $algorithmVersion = $bot->algorithm_version;
+        // check if algorithm text has changed
+        $algorithmTextVersion = $bot->algorithm_text_version;
         if(md5($bot->algorithm_text) != md5($request->algorithm_text)) {
+            $algorithmTextVersion += 1;
+        }
+
+        // check if compiled algorithm has changed
+        $algorithmVersion = $bot->algorithm_version;
+        if(md5($bot->algorithm_text_compiled) != md5($request->algorithm_text_compiled)) {
             $algorithmVersion += 1;
         }
 
         $bot->name = $request->name;
         $bot->algorithm_text = $request->algorithm_text;
+        $bot->algorithm_text_version = $algorithmTextVersion;
         $bot->algorithm_text_compiled = $request->algorithm_text_compiled ? $request->algorithm_text_compiled : $bot->algorithm_text_compiled;
         $bot->algorithm_version = $algorithmVersion;
         $bot->parameter_options = $request->parameter_options;
+        $bot->event_streams = $request->event_streams;
         $bot->symbols = $request->symbols ? $request->symbols : $bot->symbols;
         $bot->indicators = $request->indicators ? $request->indicators : $bot->indicators;
         $bot->save();

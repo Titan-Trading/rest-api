@@ -26,7 +26,7 @@ class ExchangeAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'api_key', 'api_key_secret', 'api_key_passphrase', 'api_version', 'wallet_private_key')
+        $query = ExchangeAccount::select('id', 'user_id', 'exchange_id', 'name', 'api_key', 'api_key_secret', 'api_key_passphrase', 'api_version', 'wallet_private_key')
             ->whereUserId($request->user()->id)
             ->with([
                 // 'user' => function($q) {
@@ -51,6 +51,7 @@ class ExchangeAccountController extends Controller
     public function store(Request $request)
     {
         $rules = [
+            'name' => ['required', 'unique:exchange_accounts,name'],
             'exchange_id' => ['required', 'exists:exchanges,id']
         ];
 
@@ -72,6 +73,8 @@ class ExchangeAccountController extends Controller
         }
 
         $this->validate($request, $rules, [
+            'name_required' => 'Name is required',
+            'name_unique' => 'Name must be unique',
             'exchange_id_required' => 'Exchange id is required',
             'exchange_id_exists' => 'Exchange not found',
             'wallet_private_key_required' => 'Wallet private key is required',
@@ -82,6 +85,7 @@ class ExchangeAccountController extends Controller
         ]);
 
         $exchangeAccount = new ExchangeAccount();
+        $exchangeAccount->name = $request->name;
         $exchangeAccount->user_id = $request->user()->id;
         $exchangeAccount->exchange_id = $request->exchange_id;
 
@@ -145,6 +149,7 @@ class ExchangeAccountController extends Controller
         }
 
         $rules = [
+            'name' => ['required', 'unique:exchange_accounts,name,' . $exchangeAccount->id],
             'exchange_id' => ['required', 'exists:exchange_accounts,id']
         ];
 
@@ -163,6 +168,8 @@ class ExchangeAccountController extends Controller
         }
 
         $this->validate($request, $rules, [
+            'name_required' => 'Name is required',
+            'name_unique' => 'Name must be unique',
             'exchange_id_required' => 'Exchange id is required',
             'exchange_id_exists' => 'Exchange not found',
             'wallet_private_key_required' => 'Wallet private key is required',
@@ -173,6 +180,7 @@ class ExchangeAccountController extends Controller
         ]);
 
         $exchangeAccount->exchange_id = $request->exchange_id;
+        $exchangeAccount->name = $request->name;
 
         if($exchange->is_dex) {
             $exchangeAccount->wallet_private_key = $request->wallet_private_key ? $request->wallet_private_key : $exchangeAccount->wallet_private_key;

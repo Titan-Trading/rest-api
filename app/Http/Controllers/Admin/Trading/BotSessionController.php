@@ -6,6 +6,7 @@ use App\Models\Trading\Bot;
 use App\Models\Trading\BotSession;
 use App\Models\Trading\ExchangeAccount;
 use App\Services\MessageBus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -222,14 +223,14 @@ class BotSessionController extends Controller
     }
 
     /**
-     * Activate or start a bot session by id
+     * Resume a bot session by id
      *
      * @param Request $request
      * @param integer $botId
      * @param integer $id
      * @return void
      */
-    public function activate(Request $request, $botId, $id)
+    public function resume(Request $request, $botId, $id)
     {
         $bot = Bot::find($botId);
         if(!$bot) {
@@ -260,7 +261,7 @@ class BotSessionController extends Controller
             'topic' => 'bot-sessions',
             'messageType' => 'EVENT',
             'messageId' => Str::uuid()->toString(),
-            'eventId' => 'UPDATED',
+            'eventId' => 'RESUMED',
             'serviceId' => 'simple-trader-api',
             'instanceId' => env('INSTANCE_ID'),
             'data' => $session->toArray()
@@ -270,14 +271,14 @@ class BotSessionController extends Controller
     }
 
     /**
-     * Deactivate or stop a bot session by id
+     * Stop a bot session by id
      *
      * @param Request $request
      * @param integer $botId
      * @param integer $id
      * @return void
      */
-    public function deactivate(Request $request, $botId, $id)
+    public function stop(Request $request, $botId, $id)
     {
         $bot = Bot::find($botId);
         if(!$bot) {
@@ -296,7 +297,14 @@ class BotSessionController extends Controller
             ], 404);
         }
 
+        $this->validate($request, [
+            'paused_at' => ['required']
+        ], [
+            'paused_at_required' => 'Paused date is required'
+        ]);
+
         $session->active = false;
+        $session->paused_at = $request->paused_at;
         $session->save();
 
         /**
@@ -308,7 +316,7 @@ class BotSessionController extends Controller
             'topic' => 'bot-sessions',
             'messageType' => 'EVENT',
             'messageId' => Str::uuid()->toString(),
-            'eventId' => 'UPDATED',
+            'eventId' => 'STOPPED',
             'serviceId' => 'simple-trader-api',
             'instanceId' => env('INSTANCE_ID'),
             'data' => $session->toArray()

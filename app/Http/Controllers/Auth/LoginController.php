@@ -22,7 +22,7 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 300); // 1 hour
+        $this->jwt = new JWT(storage_path('keys/access-token-private.pem'), 'RS512', 3600); // 1 hour
     }
 
     public function login(Request $request)
@@ -47,7 +47,7 @@ class LoginController extends Controller
 
         // generate access token
         $jti = Str::uuid()->toString();
-        $expiration = Carbon::now()->addSeconds(300)->timestamp;
+        $expiration = Carbon::now()->addSeconds(3600)->timestamp;
         $audience = 'simple-trader';
         $subject = 'user';
         $metadata = [
@@ -194,7 +194,7 @@ class LoginController extends Controller
         try {
             // generate access token
             $jti = Str::uuid()->toString();
-            $expiration = Carbon::now()->addSeconds(300)->timestamp;
+            $expiration = Carbon::now()->addSeconds(3600)->timestamp;
             $audience = 'https://www.simpletrader.com';
             $subject = 'user';
             $metadata = [

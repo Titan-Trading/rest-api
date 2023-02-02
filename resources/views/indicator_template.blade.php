@@ -1,46 +1,22 @@
-class IndicatorStrategy extends IndicatorAlgorithm
-{
-    private _symbol: any;
-    private _periods: number;
+(sandbox: any) => {
+    // get inputs
+    const periods = sandbox.input('periods');
 
-    /**
-     * Initialize the indicator
-     */
-    initialize()
-    {
-        // set the chart series
-        // this.setSeries('histogram');
-        // this.setValueType('single');
+    // setup event streams
+    sandbox.on(`update`, (update) => {
+        console.log('update from within indicator', update);
 
-        // get the symbol for the indicator
-        this._symbol = this.getSymbol();
+        const closes = update.close;
 
-        // get the parameter for the periods used with the indicator
-        this._periods = this.getParameter('integer', 'periods'); 
-    }
-
-    /**
-     * OnTick (individual price movement)
-     * - when a symbol's price is moved
-     */
-    onTick(candle)
-    {
-
-        console.log('periods: ' + this._periods);
-
-        const previousData = this.getHistoricData(this._periods);
-
-        console.log('previous data: ' + previousData.length);
-
-        // send indicator as ready when enough previous data is loaded
-        if(previousData.length == this._periods) {
-            this.setReady(true);
+        if(!closes || closes.length < periods) {
+            sandbox.setValue(0);
+            return;
         }
 
         let sumGain = 0;
         let sumLoss = 0;
-        for(let i = 1; i < previousData.length; i++) {
-            let diff = previousData[i].close - previousData[i - 1].close;
+        for(let i = 1; i < closes.length; i++) {
+            let diff = closes[i] - closes[i - 1];
             if(diff >= 0) {
                 sumGain += diff;
             }
@@ -50,14 +26,25 @@ class IndicatorStrategy extends IndicatorAlgorithm
         }
 
         if(sumGain == 0) {
+            sandbox.setValue(0);
             return;
         }
 
         const relativeStrength = sumGain / sumLoss;
 
-        const relativeStrengthIndex = 100.0 - (100.0 / (1 + relativeStrength)); 
+        const relativeStrengthIndex = 100.0 - (100.0 / (1 + relativeStrength));
 
         // if the indicator has more than one value, set each value by name
-        this.setValues(relativeStrengthIndex);
-    }
-}
+        sandbox.setValue(relativeStrengthIndex);
+    });
+
+    // return the indicators config
+    return [
+        {
+            type: 'integer',
+            key: 'periods',
+            name: 'Periods',
+            defaultValue: 14
+        }
+    ];
+};

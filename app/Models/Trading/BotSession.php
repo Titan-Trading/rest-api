@@ -22,6 +22,7 @@ class BotSession extends Model
         'mode',
         'active',
         'started_at',
+        'paused_at',
         'ended_at'
     ];
 

@@ -17,9 +17,11 @@ class Indicator extends Model
         'name',
         'is_active',
         'algorithm_text',
+        'algorithm_text_version',
         'algorithm_text_compiled',
         'algorithm_version',
-        'parameter_options'
+        'parameter_options',
+        'event_streams'
     ];
 
     /**

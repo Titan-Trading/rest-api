@@ -102,8 +102,8 @@ Route::group([
     Route::post('/bots/{botId}/sessions', 'BotSessionController@store');
     Route::get('/bots/{botId}/sessions/{id}', 'BotSessionController@show');
     Route::put('/bots/{botId}/sessions/{id}', 'BotSessionController@update');
-    Route::put('/bots/{botId}/sessions/{id}/activate', 'BotSessionController@activate');
-    Route::put('/bots/{botId}/sessions/{id}/deactivate', 'BotSessionController@deactivate');
+    Route::post('/bots/{botId}/sessions/{id}/resume', 'BotSessionController@resume');
+    Route::post('/bots/{botId}/sessions/{id}/stop', 'BotSessionController@stop');
     Route::delete('/bots/{botId}/sessions/{id}', 'BotSessionController@delete');
     Route::post('/bots/{botId}/sessions/{id}/results', 'BotSessionResultController@store');
     Route::get('/bots/{botId}/sessions/{id}/results', 'BotSessionResultController@show');

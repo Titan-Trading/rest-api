@@ -16,9 +16,11 @@ class Bot extends Model
         'user_id',
         'name',
         'algorithm_text',
+        'algorithm_text_version',
         'algorithm_text_compiled',
         'algorithm_version',
         'parameter_options',
+        'event_streams',
         'symbols',
         'indicators'
     ];

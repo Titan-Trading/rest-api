@@ -15,6 +15,7 @@ class ExchangeAccount extends Model
     protected $fillable = [
         'user_id',
         'exchange_id',
+        'name',
         'api_key',
         'api_key_secret',
         'api_key_passphrase',
@@ -23,7 +24,8 @@ class ExchangeAccount extends Model
     ];
 
     protected $hidden = [
-        // 'api_key_secret'
+        'api_key_secret',
+        'wallet_private_key'
     ];
 
     /**

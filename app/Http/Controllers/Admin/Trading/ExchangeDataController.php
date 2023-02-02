@@ -18,9 +18,14 @@ class ExchangeDataController extends Controller
     {
         $query = ExchangeKlineData::query();
 
-        $currentPage = $request->page;
-        if(!$request->has('page')) {
-            $currentPage = 1;
+        $currentPage = 1;
+        if($request->has('page')) {
+            $currentPage = (int) $request->page;
+        }
+
+        $perPage = 1000;
+        if($request->has('per_page')) {
+            $perPage = (int) $request->per_page;
         }
 
         // search by exchange id
@@ -77,7 +82,9 @@ class ExchangeDataController extends Controller
             $query->where('timestamp', '<=', Carbon::parse($request->to_date)->timestamp);
         }
 
-        $datasetRows = $query->orderBy('timestamp', 'asc')->paginate(1000)->toArray();
+        Log::info($query->toSql());
+
+        $datasetRows = $query->orderBy('timestamp', 'asc')->paginate($perPage)->toArray();
         if(!$datasetRows['total']) {
             return response()->json([
                 'data' => [],
@@ -94,7 +101,7 @@ class ExchangeDataController extends Controller
             'data' => $datasetRows['data'],
             'meta' => [
                 'per_page'     => $datasetRows['per_page'],
-                'current_page' => (int) $currentPage,
+                'current_page' => $currentPage,
                 'last_page'    => $datasetRows['last_page'],
                 'total'        => $datasetRows['total']
             ]

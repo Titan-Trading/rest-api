@@ -67,8 +67,10 @@ class IndicatorController extends Controller
         $indicator->name = $request->name ? $request->name : $generator->getName();
         $indicator->is_active = true;
         $indicator->algorithm_text = $request->algorithm_text ? $request->algorithm_text : $indicatorTemplate;
+        $indicator->algorithm_text_version = 1;
         $indicator->algorithm_version = 1;
         $indicator->parameter_options = '{}';
+        $indicator->event_streams = '{}';
         $indicator->save();
 
         return response()->json($indicator, 201);
@@ -125,17 +127,24 @@ class IndicatorController extends Controller
             'algorithm_text_required' => 'Algorithm text is required'
         ]);
 
-        $algorithmVersion = $indicator->algorithm_version;
+        $algorithmTextVersion = $indicator->algorithm_text_version;
         if(md5($indicator->algorithm_text) != md5($request->algorithm_text)) {
-            $algorithmVersion += 1;
+            $algorithmTextVersion += 1;
+        }
+
+        $algorithmVersion = $indicator->algorithm_version;
+        if(md5($indicator->algorithm_text_compiled) != md5($request->algorithm_text_compiled)) {
+            $algorithmVersion = $algorithmTextVersion;
         }
 
         $indicator->name = $request->name;
         $indicator->is_active = $request->is_active;
         $indicator->algorithm_text = $request->algorithm_text;
+        $indicator->algorithm_text_version = $algorithmTextVersion;
         $indicator->algorithm_text_compiled = $request->algorithm_text_compiled ? $request->algorithm_text_compiled : $indicator->algorithm_text_compiled;
         $indicator->algorithm_version = $algorithmVersion;
         $indicator->parameter_options = $request->parameter_options;
+        $indicator->event_streams = $request->event_streams;
         $indicator->save();
 
         /**
